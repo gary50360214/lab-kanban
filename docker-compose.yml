@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: lab_postgres
+    restart: always
+
+    environment:
+      POSTGRES_USER: labuser
+      POSTGRES_PASSWORD: labpassword
+      POSTGRES_DB: labkanban
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    ports:
+      - "15432:5432"
+    networks:
+      - lab_network
+
+  backend:
+    build: ./backend
+
+    container_name: lab_backend
+
+    restart: always
+
+    depends_on:
+      - postgres
+
+    ports:
+      - "18088:8000"
+    networks:
+      - lab_network
+
+  frontend:
+    build: ./frontend
+
+    container_name: lab_frontend
+
+    restart: always
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "18080:5173"
+    networks:
+       - lab_network
+
+  nginx:
+    image: nginx:latest
+    container_name: lab_nginx
+
+    ports:
+      - "8080:80"
+
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - lab_network
+
+volumes:
+  postgres_data:
+
+networks:
+  lab_network:

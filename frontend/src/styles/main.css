@@ -1,0 +1,313 @@
+@import "./variables.css";
+@import "./reset.css";
+
+@import "./layout.css";
+@import "./navbar.css";
+
+@import "./components.css";
+@import "./components/buttons.css";
+@import "./components/cards.css";
+@import "./components/forms.css";
+@import "./components/task-editor.css";
+@import "./components/owner-manager.css";
+
+@import "./home.css";
+@import "./projects.css";
+
+@import "./modal.css";
+@import "./task-drawer.css"
+@import "./kanban/board.css";
+@import "./kanban/column.css";
+@import "./kanban/task-card.css";
+@import "./kanban/checklist.css";
+@import "./kanban/progress.css";
+@import "./TaskEditSidebar.css";
+
+@import "./responsive.css";
+
+
+/*
+==================================================
+ND2A33
+Global Foundation
+==================================================
+*/
+
+
+/* ==========================================
+   Global
+========================================== */
+
+html {
+
+    font-family:
+        "Inter",
+        "Noto Sans TC",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    font-size:16px;
+
+    color:
+        var(--color-text-primary);
+
+    background:
+        var(--color-background);
+
+    -webkit-font-smoothing:
+        antialiased;
+
+    -moz-osx-font-smoothing:
+        grayscale;
+
+}
+
+
+/* ==========================================
+   Body
+========================================== */
+
+body {
+
+    margin:0;
+
+    min-width:320px;
+
+    min-height:100vh;
+
+    font-family:
+        "Inter",
+        "Noto Sans TC",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    color:
+        var(--color-text-primary);
+
+    background:
+        var(--color-background);
+
+}
+
+
+/* ==========================================
+   Vue Root
+========================================== */
+
+#app {
+
+    min-height:100vh;
+
+    width:100%;
+
+}
+
+
+/* ==========================================
+   Global box sizing
+========================================== */
+
+*,
+*::before,
+*::after {
+
+    box-sizing:border-box;
+
+}
+
+
+/* ==========================================
+   Typography
+========================================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+
+    margin-top:0;
+
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+
+    font-family:
+        "Inter",
+        "Noto Sans TC",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    color:
+        var(--color-text-primary);
+
+}
+
+
+button,
+input,
+textarea,
+select {
+
+    font-family:
+        "Inter",
+        "Noto Sans TC",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+}
+
+
+/* ==========================================
+   Buttons
+========================================== */
+
+button {
+
+    cursor:pointer;
+
+}
+
+
+/* ==========================================
+   Form controls
+========================================== */
+
+input,
+textarea,
+select {
+
+    font-size:15px;
+
+}
+
+
+/* ==========================================
+   Select
+========================================== */
+
+select {
+
+    color:
+        var(--color-text-primary);
+
+    background:
+        var(--color-surface);
+
+}
+
+
+/*
+   IMPORTANT
+
+   Native select options must remain readable.
+   Do not inherit white text from an old dark-mode
+   component.
+*/
+
+select option {
+
+    color:
+        #1d1d1f;
+
+    background:
+        #ffffff;
+
+}
+
+
+/* ==========================================
+   Links
+========================================== */
+
+a {
+
+    color:inherit;
+
+    text-decoration:none;
+
+}
+
+
+/* ==========================================
+   Images
+========================================== */
+
+img {
+
+    max-width:100%;
+
+    display:block;
+
+}
+
+
+/* ==========================================
+   Page scrolling
+========================================== */
+
+html,
+body,
+#app {
+
+    overflow-x:hidden;
+
+}
+
+
+/*
+   DO NOT put overflow-y:hidden here.
+
+   The entire browser page must be allowed to
+   scroll naturally when the Kanban contains
+   many tasks.
+*/
+
+
+/* ==========================================
+   Text selection
+========================================== */
+
+::selection {
+
+    color:
+        var(--color-text-inverse);
+
+    background:
+        var(--color-accent);
+
+}
+
+
+/* ==========================================
+   Focus
+========================================== */
+
+:focus-visible {
+
+    outline:
+
+        3px solid
+        var(--color-focus);
+
+    outline-offset:
+
+        2px;
+
+}

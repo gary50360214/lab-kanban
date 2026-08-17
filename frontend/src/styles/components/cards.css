@@ -1,0 +1,292 @@
+/*
+==================================================
+ND2A33
+Apple Pro Card System
+==================================================
+*/
+
+
+/* ==========================================
+   Base Card
+========================================== */
+
+.card,
+.project-card,
+.task-card,
+.template-card{
+
+    position:relative;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+
+    background:var(--project-card);
+
+    color:var(--project-text);
+
+    border:1px solid var(--project-border);
+
+    border-radius:22px;
+
+    padding:22px;
+
+    box-shadow:var(--project-shadow-small);
+
+    transition:
+        transform .28s ease,
+        box-shadow .28s ease,
+        border-color .28s ease,
+        background .28s ease;
+
+}
+
+
+
+/* ==========================================
+   Hover
+========================================== */
+
+.card:hover,
+.project-card:hover,
+.task-card:hover,
+.template-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:rgba(255,255,255,.08);
+
+    background:var(--project-card-hover);
+
+    box-shadow:var(--project-shadow-large);
+
+}
+
+
+
+/* ==========================================
+   Title
+========================================== */
+
+.card h2,
+.project-card h2,
+.task-card h4,
+.template-card h3{
+
+    margin:0;
+
+    color:var(--project-text);
+
+    font-size:20px;
+
+    font-weight:650;
+
+    line-height:1.3;
+
+    letter-spacing:-0.02em;
+
+}
+
+
+
+/* ==========================================
+   Paragraph
+========================================== */
+
+.card p,
+.project-card p,
+.template-card p,
+.task-description{
+
+    margin:0;
+
+    color:var(--project-text-secondary);
+
+    line-height:1.65;
+
+}
+
+
+
+/* ==========================================
+   Task Meta
+========================================== */
+
+.task-meta{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    font-size:13px;
+
+    color:var(--project-text-secondary);
+
+}
+
+
+
+/* ==========================================
+   Priority Badge
+========================================== */
+
+.priority-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:84px;
+
+    height:30px;
+
+    padding:0 14px;
+
+    border-radius:999px;
+
+    font-size:12px;
+
+    font-weight:600;
+
+    letter-spacing:.02em;
+
+}
+
+
+
+/* 緊急且重要 */
+
+.priority-badge.urgent-important{
+
+    background:#ff453a22;
+
+    color:#ff6961;
+
+}
+
+
+
+/* 緊急 */
+
+.priority-badge.urgent{
+
+    background:#ff9f0a22;
+
+    color:#ffb340;
+
+}
+
+
+
+/* 重要 */
+
+.priority-badge.important{
+
+    background:#2997ff22;
+
+    color:#5db6ff;
+
+}
+
+
+
+/* 普通 */
+
+.priority-badge.normal{
+
+    background:#ffffff12;
+
+    color:#c8c8cc;
+
+}
+
+
+
+/* ==========================================
+   Card Footer
+========================================== */
+
+.task-actions{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:10px;
+
+    margin-top:auto;
+
+    padding-top:18px;
+
+    border-top:1px solid var(--project-border);
+
+}
+
+
+
+/* ==========================================
+   Template Task Block
+========================================== */
+
+.template-task-block{
+
+    background:rgba(255,255,255,.03);
+
+    border:1px solid var(--project-border);
+
+    border-radius:18px;
+
+    padding:18px;
+
+}
+
+
+
+/* ==========================================
+   Empty State
+========================================== */
+
+.empty-card{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-height:180px;
+
+    border:2px dashed var(--project-border);
+
+    border-radius:22px;
+
+    color:var(--project-text-secondary);
+
+}
+
+
+
+/* ==========================================
+   Responsive
+========================================== */
+
+@media (max-width:900px){
+
+    .card,
+    .project-card,
+    .task-card,
+    .template-card{
+
+        border-radius:18px;
+
+        padding:18px;
+
+    }
+
+}

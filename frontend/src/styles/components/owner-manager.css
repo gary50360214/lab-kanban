@@ -1,0 +1,292 @@
+/* =========================================================
+   Owner Manager
+   Apple-inspired, clean and compact
+   ========================================================= */
+
+.member-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin: 0;
+
+    padding: 0;
+
+}
+
+
+/* =========================================================
+   Member Item
+   ========================================================= */
+
+.member-item {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    width: 100%;
+
+    min-height: 52px;
+
+    padding: 7px 8px 7px 16px;
+
+    box-sizing: border-box;
+
+    background: #f5f5f7;
+
+    border: 1px solid #e5e5ea;
+
+    border-radius: 14px;
+
+}
+
+
+/* Owner name */
+
+.member-item > span {
+
+    flex: 1 1 auto;
+
+    min-width: 0;
+
+    color: #1d1d1f;
+
+    font-size: 15px;
+
+    font-weight: 500;
+
+    line-height: 1.4;
+
+}
+
+
+/* =========================================================
+   Delete Button
+
+   Important:
+   Do NOT let the global .delete-button layout
+   affect the member row.
+   ========================================================= */
+
+.member-item .delete-button {
+
+    flex: 0 0 auto;
+
+    width: auto;
+
+    min-width: 64px;
+
+    min-height: 36px;
+
+    margin: 0;
+
+    padding: 8px 14px;
+
+    box-sizing: border-box;
+
+    border-radius: 10px;
+
+}
+
+
+/* =========================================================
+   Add Owner
+   ========================================================= */
+
+.owner-add {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    width: 100%;
+
+    margin-top: 20px;
+
+}
+
+
+/* =========================================================
+   Add Owner Input
+
+   modal.css gives all modal inputs width:100%.
+   Override that ONLY inside owner-add.
+   ========================================================= */
+
+.owner-add input {
+
+    flex: 1 1 auto;
+
+    width: auto;
+
+    min-width: 0;
+
+    min-height: 44px;
+
+    height: 44px;
+
+    box-sizing: border-box;
+
+    padding: 0 14px;
+
+    border: 1px solid #c7c7cc;
+
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    color: #1d1d1f;
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    line-height: 1.4;
+
+    outline: none;
+
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        background-color 160ms ease;
+
+}
+
+
+.owner-add input::placeholder {
+
+    color: #86868b;
+
+}
+
+
+.owner-add input:hover {
+
+    border-color: #a1a1a6;
+
+}
+
+
+.owner-add input:focus {
+
+    border-color: #0071e3;
+
+    box-shadow:
+        0 0 0 4px rgba(0, 113, 227, .12);
+
+}
+
+
+/* =========================================================
+   Add Button
+
+   Override the global .secondary-button only here.
+   ========================================================= */
+
+.owner-add .secondary-button {
+
+    flex: 0 0 auto;
+
+    width: auto;
+
+    min-width: 64px;
+
+    min-height: 44px;
+
+    height: 44px;
+
+    margin: 0;
+
+    padding: 0 16px;
+
+    box-sizing: border-box;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   Empty State
+   ========================================================= */
+
+.empty-owner {
+
+    padding: 24px 16px;
+
+    text-align: center;
+
+    color: #86868b;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================================
+   Modal Footer
+
+   Keep action buttons separated from the content.
+   ========================================================= */
+
+.modal-buttons {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    margin-top: 0;
+
+}
+
+
+/* =========================================================
+   Mobile
+   ========================================================= */
+
+@media (max-width: 560px) {
+
+    .member-item {
+
+        padding-left: 14px;
+
+    }
+
+
+    .member-item .delete-button {
+
+        min-width: 60px;
+
+        padding: 8px 12px;
+
+    }
+
+
+    .owner-add {
+
+        gap: 8px;
+
+    }
+
+
+    .owner-add .secondary-button {
+
+        min-width: 60px;
+
+        padding: 0 12px;
+
+    }
+
+}

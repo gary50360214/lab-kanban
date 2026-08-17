@@ -1,0 +1,231 @@
+/*
+==================================================
+ND2A33
+Kanban Column
+Apple Dark Glass Design
+==================================================
+*/
+
+
+/* ==========================================
+   Column
+========================================== */
+
+.kanban-column{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+    min-width:0;
+
+    padding:20px;
+
+    border-radius:24px;
+
+    background:
+
+        var(--project-surface-glass);
+
+    border:
+
+        1px solid var(--project-border);
+
+    backdrop-filter:
+
+        blur(20px);
+
+    box-shadow:
+
+        var(--shadow-soft);
+
+}
+
+
+/* ==========================================
+   Header
+========================================== */
+
+.kanban-column-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding-bottom:12px;
+
+    border-bottom:
+
+        1px solid rgba(255,255,255,.08);
+
+}
+
+
+.kanban-column-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+.kanban-column-title h3{
+
+    margin:0;
+
+    font-size:18px;
+
+    font-weight:650;
+
+    color:
+
+        var(--project-text);
+
+}
+
+
+/* ==========================================
+   Task Counter
+========================================== */
+
+.kanban-count{
+
+    min-width:28px;
+
+    height:28px;
+
+    padding:0 10px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:999px;
+
+    background:
+
+        rgba(255,255,255,.08);
+
+    border:
+
+        1px solid rgba(255,255,255,.10);
+
+    color:
+
+        var(--project-text-secondary);
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+
+/* ==========================================
+   Column Body
+========================================== */
+
+.kanban-column-body{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+
+    min-height:120px;
+
+}
+
+
+/* ==========================================
+   Empty
+========================================== */
+
+.kanban-empty{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-height:90px;
+
+    border:
+
+        1px dashed rgba(255,255,255,.10);
+
+    border-radius:18px;
+
+    color:
+
+        var(--project-text-muted);
+
+    font-size:13px;
+
+}
+
+
+/* ==========================================
+   Status Color Bar
+========================================== */
+
+.kanban-column.todo{
+
+    border-top:
+
+        4px solid var(--status-todo);
+
+}
+
+
+.kanban-column.running{
+
+    border-top:
+
+        4px solid var(--status-running);
+
+}
+
+
+.kanban-column.waiting{
+
+    border-top:
+
+        4px solid var(--status-waiting);
+
+}
+
+
+.kanban-column.completed{
+
+    border-top:
+
+        4px solid var(--status-completed);
+
+}
+
+
+/* ==========================================
+   Mobile
+========================================== */
+
+@media(max-width:760px){
+
+    .kanban-column{
+
+        padding:18px;
+
+    }
+
+}

@@ -1,0 +1,137 @@
+.task-editor{
+
+    width:100%;
+
+}
+
+
+
+.task-date-row{
+
+
+    display:grid;
+
+
+    grid-template-columns:1fr 1fr;
+
+
+    gap:16px;
+
+
+}
+
+
+
+.checklist-editor{
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    gap:12px;
+
+
+}
+
+
+
+.check-item{
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    gap:10px;
+
+
+}
+
+
+
+.check-item input[type="text"]{
+
+
+    flex:1;
+
+
+}
+
+
+
+.check-item button{
+
+
+    color:#ff453a;
+
+
+}
+
+
+
+.add-check{
+
+
+    padding:10px;
+
+
+    border-radius:14px;
+
+
+    background:
+
+        rgba(255,255,255,.08);
+
+
+    color:white;
+
+
+}
+
+
+
+.task-progress-editor{
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    gap:10px;
+
+
+}
+
+
+
+
+.task-progress-editor input{
+
+
+    width:100%;
+
+
+}
+
+
+
+@media(max-width:600px){
+
+
+    .task-date-row{
+
+
+        grid-template-columns:1fr;
+
+
+    }
+
+
+}

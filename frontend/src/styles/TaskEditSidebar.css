@@ -1,0 +1,1181 @@
+/*
+==================================================
+ND2A33
+Task Edit Sidebar
+Notion / Apple Inspired Inspector
+Opaque Panel Edition
+==================================================
+*/
+
+
+/* ==========================================
+   Sidebar
+========================================== */
+
+.task-edit-sidebar{
+
+    position:fixed;
+
+    top:0;
+
+    right:0;
+
+    z-index:1200;
+
+    width:min(
+        440px,
+        92vw
+    );
+
+    height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    /*
+     * IMPORTANT
+     *
+     * Use a completely opaque background.
+     *
+     * Do NOT use rgba() here.
+     * Otherwise the page underneath may show
+     * through the sidebar when the sidebar crosses
+     * different background areas.
+     */
+
+    background:#ffffff;
+
+    color:#1d1d1f;
+
+    border-left:
+        1px solid
+        #e5e5ea;
+
+    box-shadow:
+        -16px 0 40px
+        rgba(0,0,0,.12);
+
+    animation:
+        taskSidebarEnter
+        .24s
+        cubic-bezier(
+            .22,
+            1,
+            .36,
+            1
+        );
+
+}
+
+
+/* ==========================================
+   Entrance
+========================================== */
+
+@keyframes taskSidebarEnter{
+
+    from{
+
+        transform:
+            translateX(100%);
+
+        opacity:.7;
+
+    }
+
+    to{
+
+        transform:
+            translateX(0);
+
+        opacity:1;
+
+    }
+
+}
+
+
+/* ==========================================
+   Header
+========================================== */
+
+.task-sidebar-header{
+
+    flex-shrink:0;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+    gap:20px;
+
+    padding:
+        28px
+        28px
+        22px;
+
+    /*
+     * Keep header opaque as well.
+     */
+
+    background:#ffffff;
+
+    border-bottom:
+        1px solid
+        #e5e5ea;
+
+}
+
+
+/* ==========================================
+   Header Text
+========================================== */
+
+.task-sidebar-heading{
+
+    min-width:0;
+
+}
+
+
+.task-sidebar-eyebrow{
+
+    display:block;
+
+    margin-bottom:6px;
+
+    color:#8e8e93;
+
+    font-size:10px;
+
+    font-weight:700;
+
+    letter-spacing:.12em;
+
+}
+
+
+.task-sidebar-heading h2{
+
+    margin:0;
+
+    color:#1d1d1f;
+
+    font-size:22px;
+
+    font-weight:650;
+
+    letter-spacing:-.025em;
+
+    line-height:1.25;
+
+}
+
+
+.task-sidebar-heading p{
+
+    margin:
+        6px
+        0
+        0;
+
+    color:#86868b;
+
+    font-size:12px;
+
+    line-height:1.4;
+
+}
+
+
+/* ==========================================
+   Close Button
+========================================== */
+
+.task-sidebar-close{
+
+    flex-shrink:0;
+
+    width:34px;
+
+    height:34px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:0;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:#f2f2f7;
+
+    color:#6e6e73;
+
+    font-size:22px;
+
+    font-weight:300;
+
+    line-height:1;
+
+    cursor:pointer;
+
+    transition:
+        background .18s ease,
+        color .18s ease,
+        transform .18s ease;
+
+}
+
+
+.task-sidebar-close:hover{
+
+    background:#e8e8ed;
+
+    color:#1d1d1f;
+
+    transform:
+        scale(1.04);
+
+}
+
+
+.task-sidebar-close:active{
+
+    transform:
+        scale(.94);
+
+}
+
+
+/* ==========================================
+   Form
+========================================== */
+
+.task-sidebar-form{
+
+    min-height:0;
+
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+/* ==========================================
+   Scrollable Body
+========================================== */
+
+.task-sidebar-body{
+
+    min-height:0;
+
+    flex:1;
+
+    overflow-y:auto;
+
+    overflow-x:hidden;
+
+    padding:
+        4px
+        28px
+        32px;
+
+    overscroll-behavior:contain;
+
+    scrollbar-width:thin;
+
+    scrollbar-color:
+        rgba(0,0,0,.18)
+        transparent;
+
+}
+
+
+.task-sidebar-body::-webkit-scrollbar{
+
+    width:7px;
+
+}
+
+
+.task-sidebar-body::-webkit-scrollbar-track{
+
+    background:transparent;
+
+}
+
+
+.task-sidebar-body::-webkit-scrollbar-thumb{
+
+    border-radius:999px;
+
+    background:
+        rgba(0,0,0,.16);
+
+}
+
+
+.task-sidebar-body::-webkit-scrollbar-thumb:hover{
+
+    background:
+        rgba(0,0,0,.28);
+
+}
+
+
+/* ==========================================
+   Section
+========================================== */
+
+.sidebar-section{
+
+    padding:
+        22px
+        0;
+
+    border-bottom:
+        1px solid
+        #ededf0;
+
+}
+
+
+.sidebar-section:first-child{
+
+    padding-top:20px;
+
+}
+
+
+.sidebar-section:last-of-type{
+
+    border-bottom:0;
+
+}
+
+
+/* ==========================================
+   Section Header
+========================================== */
+
+.sidebar-section-header{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    justify-content:space-between;
+
+    gap:16px;
+
+    margin-bottom:15px;
+
+}
+
+
+.sidebar-section-header > div{
+
+    min-width:0;
+
+}
+
+
+.sidebar-section-header h3{
+
+    margin:0;
+
+    color:#1d1d1f;
+
+    font-size:14px;
+
+    font-weight:650;
+
+    letter-spacing:-.01em;
+
+}
+
+
+.sidebar-section-header span{
+
+    display:block;
+
+    margin-top:4px;
+
+    color:#a1a1a6;
+
+    font-size:9px;
+
+    font-weight:700;
+
+    letter-spacing:.1em;
+
+}
+
+
+/* ==========================================
+   Form Group
+========================================== */
+
+.form-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:7px;
+
+}
+
+
+.form-group label{
+
+    color:#515154;
+
+    font-size:12px;
+
+    font-weight:600;
+
+}
+
+
+/* ==========================================
+   Inputs
+========================================== */
+
+.task-edit-sidebar input[type="text"],
+.task-edit-sidebar input[type="date"],
+.task-edit-sidebar select,
+.task-edit-sidebar textarea{
+
+    width:100%;
+
+    box-sizing:border-box;
+
+    border:
+        1px solid
+        #d2d2d7;
+
+    border-radius:10px;
+
+    background:#ffffff;
+
+    color:#1d1d1f;
+
+    font-family:inherit;
+
+    font-size:13px;
+
+    outline:none;
+
+    transition:
+        border-color .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
+
+}
+
+
+/* ==========================================
+   Text / Date / Select
+========================================== */
+
+.task-edit-sidebar input[type="text"],
+.task-edit-sidebar input[type="date"],
+.task-edit-sidebar select{
+
+    min-height:40px;
+
+    padding:
+        0
+        12px;
+
+}
+
+
+/* ==========================================
+   Textarea
+========================================== */
+
+.task-edit-sidebar textarea{
+
+    min-height:128px;
+
+    padding:
+        11px
+        12px;
+
+    resize:vertical;
+
+    line-height:1.55;
+
+}
+
+
+.task-edit-sidebar input::placeholder,
+.task-edit-sidebar textarea::placeholder{
+
+    color:#a1a1a6;
+
+}
+
+
+.task-edit-sidebar input:hover,
+.task-edit-sidebar select:hover,
+.task-edit-sidebar textarea:hover{
+
+    border-color:#b8b8bd;
+
+}
+
+
+.task-edit-sidebar input:focus,
+.task-edit-sidebar select:focus,
+.task-edit-sidebar textarea:focus{
+
+    border-color:#0071e3;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(0,113,227,.12);
+
+}
+
+
+/* ==========================================
+   Form Grid
+========================================== */
+
+.sidebar-form-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0,1fr)
+        );
+
+    gap:14px;
+
+}
+
+
+/* ==========================================
+   Progress
+========================================== */
+
+.progress-value{
+
+    color:#1d1d1f;
+
+    font-size:13px;
+
+    font-weight:650;
+
+}
+
+
+.progress-editor{
+
+    padding-top:4px;
+
+}
+
+
+.task-edit-sidebar input[type="range"]{
+
+    width:100%;
+
+    height:5px;
+
+    margin:0;
+
+    accent-color:#0071e3;
+
+    cursor:pointer;
+
+}
+
+
+.progress-scale{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-top:7px;
+
+    color:#a1a1a6;
+
+    font-size:10px;
+
+}
+
+/* ==========================================
+   Checklist
+========================================== */
+
+.sidebar-checklist{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+
+/* ==========================================
+   Checklist Item
+========================================== */
+
+.sidebar-checklist-item{
+
+    display:grid;
+
+    grid-template-columns:
+        20px
+        minmax(0,1fr)
+        28px;
+
+    align-items:center;
+
+    column-gap:10px;
+
+    min-height:42px;
+
+    padding:
+        5px
+        6px
+        5px
+        10px;
+
+    box-sizing:border-box;
+
+    border:
+        1px solid
+        #e5e5ea;
+
+    border-radius:10px;
+
+    background:#fafafa;
+
+    transition:
+        border-color .18s ease,
+        background .18s ease,
+        box-shadow .18s ease;
+
+}
+
+
+.sidebar-checklist-item:hover{
+
+    border-color:#d2d2d7;
+
+    background:#ffffff;
+
+}
+
+
+/* ==========================================
+   Native Checkbox
+========================================== */
+
+.sidebar-checklist-item
+input[type="checkbox"]{
+
+    position:absolute;
+
+    opacity:0;
+
+    width:1px;
+
+    height:1px;
+
+    pointer-events:none;
+
+}
+
+
+/* ==========================================
+   Custom Checkbox
+========================================== */
+
+.checklist-checkbox{
+
+    position:relative;
+
+    width:18px;
+
+    height:18px;
+
+    box-sizing:border-box;
+
+    flex-shrink:0;
+
+    border:
+        1.5px solid
+        #b8b8bd;
+
+    border-radius:5px;
+
+    background:#ffffff;
+
+    cursor:pointer;
+
+    transition:
+        background .16s ease,
+        border-color .16s ease,
+        transform .16s ease;
+
+}
+
+
+.checklist-checkbox:hover{
+
+    border-color:#8e8e93;
+
+    transform:
+        scale(1.04);
+
+}
+
+
+/* ==========================================
+   Checked
+========================================== */
+
+.sidebar-checklist-item
+input[type="checkbox"]:checked
++
+.checklist-checkbox{
+
+    border-color:#0071e3;
+
+    background:#0071e3;
+
+}
+
+
+.sidebar-checklist-item
+input[type="checkbox"]:checked
++
+.checklist-checkbox::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:5px;
+
+    top:2px;
+
+    width:5px;
+
+    height:9px;
+
+    border:
+        solid #ffffff;
+
+    border-width:
+        0
+        2px
+        2px
+        0;
+
+    transform:
+        rotate(45deg);
+
+}
+
+
+/* ==========================================
+   Checklist Text
+========================================== */
+
+.sidebar-checklist-item
+input[type="text"]{
+
+    min-width:0;
+
+    width:100%;
+
+    height:32px;
+
+    padding:
+        0
+        4px;
+
+    border:0;
+
+    border-radius:6px;
+
+    background:transparent;
+
+    color:#1d1d1f;
+
+    font-size:13px;
+
+    line-height:1.4;
+
+    box-shadow:none;
+
+}
+
+
+.sidebar-checklist-item
+input[type="text"]:hover{
+
+    background:
+        rgba(0,0,0,.025);
+
+}
+
+
+.sidebar-checklist-item
+input[type="text"]:focus{
+
+    border:0;
+
+    outline:none;
+
+    box-shadow:none;
+
+    background:
+        rgba(0,0,0,.035);
+
+}
+
+
+/* ==========================================
+   Completed Text
+========================================== */
+
+.sidebar-checklist-item
+input[type="checkbox"]:checked
++
+.checklist-checkbox
++
+input[type="text"]{
+
+    color:#8e8e93;
+
+    text-decoration:
+        line-through;
+
+    text-decoration-thickness:1px;
+
+}
+
+
+/* ==========================================
+   Delete Button
+========================================== */
+
+.checklist-delete-button{
+
+    width:28px;
+
+    height:28px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:0;
+
+    border:0;
+
+    border-radius:7px;
+
+    background:transparent;
+
+    color:#c1c1c6;
+
+    font-size:16px;
+
+    line-height:1;
+
+    cursor:pointer;
+
+    transition:
+        background .16s ease,
+        color .16s ease;
+
+}
+
+
+.checklist-delete-button:hover{
+
+    background:
+        rgba(255,59,48,.09);
+
+    color:#ff3b30;
+
+}
+
+
+/* ==========================================
+   Empty Checklist
+========================================== */
+
+.sidebar-checklist-empty{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:
+        26px
+        16px;
+
+    border:
+        1px dashed
+        #d2d2d7;
+
+    border-radius:12px;
+
+    background:#fafafa;
+
+    text-align:center;
+
+}
+
+/* ==========================================
+   Task ID
+========================================== */
+
+.sidebar-task-id{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:12px;
+
+    padding:
+        14px
+        0
+        24px;
+
+    color:#a1a1a6;
+
+    font-size:10px;
+
+}
+
+
+.sidebar-task-id code{
+
+    padding:
+        4px
+        7px;
+
+    border-radius:6px;
+
+    background:#f2f2f7;
+
+    color:#6e6e73;
+
+    font-family:
+        "SFMono-Regular",
+        Consolas,
+        monospace;
+
+    font-size:10px;
+
+}
+
+
+/* ==========================================
+   Footer
+========================================== */
+
+.task-sidebar-footer{
+
+    flex-shrink:0;
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:10px;
+
+    padding:
+        16px
+        28px;
+
+    /*
+     * Footer must also remain fully opaque.
+     */
+
+    background:#ffffff;
+
+    border-top:
+        1px solid
+        #e5e5ea;
+
+    box-shadow:
+        0 -8px 20px
+        rgba(0,0,0,.035);
+
+}
+
+
+/* ==========================================
+   Footer Buttons
+========================================== */
+
+.sidebar-button{
+
+    min-height:38px;
+
+    padding:
+        0
+        16px;
+
+    border-radius:9px;
+
+    font-family:inherit;
+
+    font-size:12px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:
+        background .16s ease,
+        border-color .16s ease,
+        transform .16s ease;
+
+}
+
+
+.sidebar-button:active{
+
+    transform:
+        scale(.97);
+
+}
+
+
+.sidebar-button-secondary{
+
+    border:
+        1px solid
+        #d2d2d7;
+
+    background:#ffffff;
+
+    color:#515154;
+
+}
+
+
+.sidebar-button-secondary:hover{
+
+    background:#f5f5f7;
+
+}
+
+
+.sidebar-button-primary{
+
+    border:
+        1px solid
+        #0071e3;
+
+    background:#0071e3;
+
+    color:#ffffff;
+
+}
+
+
+.sidebar-button-primary:hover{
+
+    background:#0077ed;
+
+    border-color:#0077ed;
+
+}
+
+
+/* ==========================================
+   Responsive
+========================================== */
+
+@media (
+    max-width:640px
+){
+
+    .task-edit-sidebar{
+
+        width:100vw;
+
+    }
+
+
+    .task-sidebar-header{
+
+        padding:
+            22px
+            20px
+            18px;
+
+    }
+
+
+    .task-sidebar-body{
+
+        padding:
+            0
+            20px
+            24px;
+
+    }
+
+
+    .task-sidebar-footer{
+
+        padding:
+            14px
+            20px;
+
+    }
+
+}
+
+
+@media (
+    max-width:420px
+){
+
+    .sidebar-form-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}

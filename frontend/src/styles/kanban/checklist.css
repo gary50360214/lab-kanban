@@ -1,0 +1,247 @@
+/*
+==================================================
+ND2A33
+Apple Pro Kanban Checklist
+==================================================
+*/
+
+
+/* ==========================================
+   Checklist Preview Container
+========================================== */
+
+.checklist-preview{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    margin-top:14px;
+
+    padding:14px;
+
+    background:
+
+        rgba(255,255,255,.04);
+
+    border:
+
+        1px solid var(--project-border);
+
+    border-radius:18px;
+
+}
+
+
+
+/* ==========================================
+   Checklist Item
+========================================== */
+
+.checklist-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    min-height:30px;
+
+    padding:
+
+        6px 8px;
+
+    border-radius:12px;
+
+    color:
+
+        var(--project-text);
+
+    font-size:13px;
+
+    transition:
+
+        background .2s ease;
+
+}
+
+
+
+.checklist-item:hover{
+
+    background:
+
+        rgba(255,255,255,.06);
+
+}
+
+
+
+/* ==========================================
+   Checkbox
+========================================== */
+
+.checklist-item input[type="checkbox"]{
+
+    appearance:none;
+
+    width:18px;
+
+    height:18px;
+
+    flex-shrink:0;
+
+    border-radius:50%;
+
+    border:
+
+        1.5px solid rgba(255,255,255,.35);
+
+    background:
+
+        transparent;
+
+    cursor:pointer;
+
+    position:relative;
+
+}
+
+
+
+.checklist-item input[type="checkbox"]:checked{
+
+    background:
+
+        var(--project-blue);
+
+    border-color:
+
+        var(--project-blue);
+
+}
+
+
+
+.checklist-item input[type="checkbox"]:checked::after{
+
+    content:"?";
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:white;
+
+    font-size:12px;
+
+    font-weight:700;
+
+}
+
+
+
+/* ==========================================
+   Text
+========================================== */
+
+.checklist-item span{
+
+    flex:1;
+
+    color:
+
+        var(--project-text);
+
+    line-height:1.4;
+
+}
+
+
+
+/* ==========================================
+   Completed
+========================================== */
+
+.checklist-item.completed span{
+
+    color:
+
+        var(--project-text-secondary);
+
+    text-decoration:
+
+        line-through;
+
+}
+
+
+
+/* ==========================================
+   Empty State
+========================================== */
+
+.checklist-empty{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    height:60px;
+
+    color:
+
+        var(--project-text-secondary);
+
+    font-size:12px;
+
+    border:
+
+        1px dashed var(--project-border);
+
+    border-radius:14px;
+
+}
+
+
+
+/* ==========================================
+   Template / Modal Scoped Override
+========================================== */
+
+/*
+只避免 Kanban checklist 影響其他地方
+*/
+
+.task-card .checklist-preview{
+
+    margin-bottom:0;
+
+}
+
+
+
+/* ==========================================
+   Responsive
+========================================== */
+
+@media(max-width:900px){
+
+    .checklist-preview{
+
+        padding:12px;
+
+    }
+
+}

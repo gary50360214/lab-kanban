@@ -1,0 +1,266 @@
+/*
+==================================================
+ND2A33
+Apple Pro Form System
+==================================================
+*/
+
+
+/* ==========================================
+   Form Container
+========================================== */
+
+.form-container,
+.project-form,
+.task-form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+}
+
+
+
+/* ==========================================
+   Label
+========================================== */
+
+label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    color:var(--project-text);
+
+    font-size:14px;
+
+    font-weight:600;
+
+    letter-spacing:-0.01em;
+
+}
+
+
+
+/* ==========================================
+   Input Base
+========================================== */
+
+input,
+textarea,
+select{
+
+    width:100%;
+
+    border:none;
+
+    outline:none;
+
+    border-radius:14px;
+
+    padding:13px 16px;
+
+    background:var(--project-input);
+
+    color:var(--project-text);
+
+    border:1px solid var(--project-border);
+
+    font-size:15px;
+
+    transition:
+
+        border-color .22s ease,
+
+        background .22s ease,
+
+        box-shadow .22s ease;
+
+}
+
+
+
+/* ==========================================
+   Placeholder
+========================================== */
+
+input::placeholder,
+textarea::placeholder{
+
+    color:var(--project-text-secondary);
+
+}
+
+
+
+/* ==========================================
+   Hover
+========================================== */
+
+input:hover,
+textarea:hover,
+select:hover{
+
+    background:var(--project-input-hover);
+
+}
+
+
+
+/* ==========================================
+   Focus
+========================================== */
+
+input:focus,
+textarea:focus,
+select:focus{
+
+    background:var(--project-input-focus);
+
+    border-color:var(--project-blue);
+
+    box-shadow:
+
+        0 0 0 4px rgba(41,151,255,.18);
+
+}
+
+
+
+/* ==========================================
+   Textarea
+========================================== */
+
+textarea{
+
+    min-height:120px;
+
+    resize:vertical;
+
+    line-height:1.6;
+
+}
+
+
+
+/* ==========================================
+   Select
+========================================== */
+
+select{
+
+    cursor:pointer;
+
+}
+
+
+
+/* ==========================================
+   Form Row
+========================================== */
+
+.form-row{
+
+    display:grid;
+
+    grid-template-columns:
+
+        repeat(2,1fr);
+
+    gap:16px;
+
+}
+
+
+
+/* ==========================================
+   Checklist Input
+========================================== */
+
+.add-checklist-row{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+
+
+.add-checklist-row input{
+
+    flex:1;
+
+}
+
+
+
+/* ==========================================
+   Template Task Row
+========================================== */
+
+.template-task-row{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+
+
+.template-task-row input{
+
+    flex:1;
+
+}
+
+
+
+/* ==========================================
+   Date Input
+========================================== */
+
+input[type="date"]{
+
+    color-scheme:dark;
+
+}
+
+
+
+/* ==========================================
+   Disabled
+========================================== */
+
+input:disabled,
+textarea:disabled,
+select:disabled{
+
+    opacity:.5;
+
+    cursor:not-allowed;
+
+}
+
+
+
+/* ==========================================
+   Responsive
+========================================== */
+
+@media(max-width:800px){
+
+    .form-row{
+
+        grid-template-columns:1fr;
+
+    }
+
+}

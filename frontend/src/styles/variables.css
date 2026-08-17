@@ -1,0 +1,262 @@
+/*
+==================================================
+ND2A33
+Global Design Tokens
+Light / Apple-inspired
+==================================================
+*/
+
+:root {
+
+    /* ==========================================
+       Typography
+    ========================================== */
+
+    --font-sans:
+        "Inter",
+        "Noto Sans TC",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+
+    /* ==========================================
+       Background
+    ========================================== */
+
+    --color-background:
+        #f5f5f7;
+
+    --color-surface:
+        #ffffff;
+
+    --color-surface-secondary:
+        #f8f8fa;
+
+    --color-surface-tertiary:
+        #eeeeef;
+
+
+    /* ==========================================
+       Text
+    ========================================== */
+
+    --color-text-primary:
+        #1d1d1f;
+
+    --color-text-secondary:
+        #6e6e73;
+
+    --color-text-tertiary:
+        #86868b;
+
+    --color-text-inverse:
+        #ffffff;
+
+
+    /* ==========================================
+       Border
+    ========================================== */
+
+    --color-border:
+        #d2d2d7;
+
+    --color-border-light:
+        #e5e5e7;
+
+    --color-border-strong:
+        #b8b8bd;
+
+
+    /* ==========================================
+       Accent
+    ========================================== */
+
+    --color-accent:
+        #0071e3;
+
+    --color-accent-hover:
+        #0077ed;
+
+    --color-accent-active:
+        #006edb;
+
+    --color-accent-soft:
+        #e8f2ff;
+
+
+    /* ==========================================
+       Status
+    ========================================== */
+
+    --color-status-todo:
+        #6e6e73;
+
+    --color-status-running:
+        #0071e3;
+
+    --color-status-waiting:
+        #a66a00;
+
+    --color-status-completed:
+        #248a3d;
+
+
+    /* ==========================================
+       Priority
+    ========================================== */
+
+    --color-priority-critical:
+        #d70015;
+
+    --color-priority-high:
+        #c93400;
+
+    --color-priority-medium:
+        #a66a00;
+
+    --color-priority-low:
+        #6e6e73;
+
+
+    /* ==========================================
+       Danger
+    ========================================== */
+
+    --color-danger:
+        #d70015;
+
+    --color-danger-hover:
+        #b80012;
+
+    --color-danger-soft:
+        #fff0f1;
+
+
+    /* ==========================================
+       Interaction
+    ========================================== */
+
+    --color-hover:
+        rgba(0, 0, 0, 0.045);
+
+    --color-active:
+        rgba(0, 0, 0, 0.075);
+
+    --color-focus:
+        rgba(0, 113, 227, 0.22);
+
+
+    /* ==========================================
+       Radius
+    ========================================== */
+
+    --radius-small:
+        8px;
+
+    --radius-medium:
+        12px;
+
+    --radius-large:
+        16px;
+
+    --radius-xl:
+        20px;
+
+    --radius-pill:
+        999px;
+
+
+    /* ==========================================
+       Spacing
+    ========================================== */
+
+    --space-1:
+        4px;
+
+    --space-2:
+        8px;
+
+    --space-3:
+        12px;
+
+    --space-4:
+        16px;
+
+    --space-5:
+        20px;
+
+    --space-6:
+        24px;
+
+    --space-7:
+        32px;
+
+    --space-8:
+        40px;
+
+    --space-9:
+        48px;
+
+
+    /* ==========================================
+       Shadows
+       
+       Keep these subtle.
+       The interface should not look like
+       glassmorphism.
+    ========================================== */
+
+    --shadow-small:
+        0 2px 8px rgba(0, 0, 0, 0.06);
+
+    --shadow-medium:
+        0 8px 24px rgba(0, 0, 0, 0.08);
+
+    --shadow-large:
+        0 20px 50px rgba(0, 0, 0, 0.12);
+
+
+    /* ==========================================
+       Layout
+    ========================================== */
+
+    --page-max-width:
+        1440px;
+
+    --page-padding:
+        32px;
+
+    --kanban-gap:
+        16px;
+
+
+    /* ==========================================
+       Motion
+    ========================================== */
+
+    --transition-fast:
+        120ms ease;
+
+    --transition-normal:
+        180ms ease;
+
+    --transition-slow:
+        240ms ease;
+
+
+    /* ==========================================
+       Z-index
+    ========================================== */
+
+    --z-navbar:
+        100;
+
+    --z-dropdown:
+        500;
+
+    --z-modal:
+        1000;
+
+}

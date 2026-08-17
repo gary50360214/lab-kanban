@@ -1,0 +1,849 @@
+/*
+==================================================
+ND2A33
+Projects Page
+Apple-inspired functional layout
+==================================================
+*/
+
+
+/* ==================================================
+   Projects Page
+================================================== */
+
+.projects-page {
+
+    width:100%;
+
+    max-width:
+        var(--page-max-width);
+
+    margin:0 auto;
+
+    padding:
+        32px var(--page-padding) 64px;
+
+    color:
+        var(--color-text-primary);
+
+}
+
+
+/* ==================================================
+   Project Selector / Project Navigation
+================================================== */
+
+.project-selector {
+
+    width:100%;
+
+    margin-bottom:24px;
+
+    padding:24px;
+
+    background:
+        var(--color-surface);
+
+    border:
+        1px solid var(--color-border);
+
+    border-radius:
+        var(--radius-large);
+
+    box-shadow:
+        var(--shadow-small);
+
+}
+
+
+/* Project selector header */
+
+.project-selector-header {
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:20px;
+
+    margin-bottom:18px;
+
+}
+
+
+.project-selector-title {
+
+    margin:0;
+
+    font-size:28px;
+
+    line-height:1.15;
+
+    font-weight:700;
+
+    letter-spacing:-0.03em;
+
+}
+
+
+.project-selector-subtitle {
+
+    margin:6px 0 0;
+
+    color:
+        var(--color-text-secondary);
+
+    font-size:14px;
+
+}
+
+
+/* ==================================================
+   Project Navigation Items
+================================================== */
+
+.project-list {
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+
+}
+
+
+/*
+   Project items behave like navigation tabs.
+
+   They are NOT cards.
+*/
+
+.project-item {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    min-height:40px;
+
+    padding:
+        9px 16px;
+
+    border:
+        1px solid var(--color-border);
+
+    border-radius:
+        var(--radius-pill);
+
+    background:
+        var(--color-surface);
+
+    color:
+        var(--color-text-secondary);
+
+    font-size:14px;
+
+    font-weight:600;
+
+    white-space:nowrap;
+
+    cursor:pointer;
+
+    transition:
+
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        color var(--transition-fast),
+        box-shadow var(--transition-fast);
+
+}
+
+
+.project-item:hover {
+
+    background:
+        var(--color-hover);
+
+    color:
+        var(--color-text-primary);
+
+    border-color:
+        var(--color-border-strong);
+
+}
+
+
+.project-item.active {
+
+    background:
+        var(--color-accent);
+
+    border-color:
+        var(--color-accent);
+
+    color:
+        #ffffff;
+
+    box-shadow:
+        0 2px 8px rgba(0, 113, 227, 0.18);
+
+}
+
+
+.project-item:focus-visible {
+
+    outline:
+        3px solid var(--color-focus);
+
+    outline-offset:
+        2px;
+
+}
+
+
+/* ==================================================
+   Project Delete
+================================================== */
+
+.project-delete {
+
+    width:22px;
+
+    height:22px;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:0;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:transparent;
+
+    color:
+        currentColor;
+
+    font-size:14px;
+
+    line-height:1;
+
+    opacity:.65;
+
+    cursor:pointer;
+
+}
+
+
+.project-delete:hover {
+
+    opacity:1;
+
+    background:
+        rgba(255,255,255,.18);
+
+}
+
+
+.project-item:not(.active) .project-delete:hover {
+
+    background:
+        rgba(0,0,0,.08);
+
+}
+
+
+/* ==================================================
+   Project Workspace
+================================================== */
+
+.workspace {
+
+    width:100%;
+
+    margin-top:0;
+
+}
+/* ==================================================
+   Project Hero
+   ================================================== */
+
+.project-top {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 24px;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    margin: 0 0 24px;
+
+    padding: 32px;
+
+    min-height: 128px;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-large);
+
+    box-shadow: var(--shadow-small);
+
+    overflow: visible;
+
+}
+
+
+.project-top > div {
+
+    min-width: 0;
+
+}
+
+
+.project-top h2 {
+
+    display: block;
+
+    margin: 0;
+
+    padding: 0;
+
+    font-size: 34px;
+
+    line-height: 1.2;
+
+    font-weight: 700;
+
+    letter-spacing: -0.035em;
+
+    color: var(--color-text-primary);
+
+}
+
+
+.project-top p {
+
+    margin: 8px 0 0;
+
+    padding: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 15px;
+
+    line-height: 1.5;
+
+}
+
+/* ==================================================
+   Workspace Action Bar
+================================================== */
+
+.project-action-bar {
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:20px;
+
+    margin-bottom:20px;
+
+    padding:
+        16px 20px;
+
+    background:
+        var(--color-surface);
+
+    border:
+        1px solid var(--color-border);
+
+    border-radius:
+        var(--radius-large);
+
+}
+
+
+/* ==================================================
+   Owner Filter
+================================================== */
+
+.owner-filter {
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    flex-wrap:wrap;
+
+    min-width:0;
+
+}
+
+
+/*
+   Owner chips are navigation controls.
+   Their detailed visual treatment can be
+   overridden by buttons.css if necessary.
+*/
+
+.owner-chip {
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-height:36px;
+
+    padding:
+        7px 14px;
+
+    border:
+        1px solid var(--color-border);
+
+    border-radius:
+        var(--radius-pill);
+
+    background:
+        var(--color-surface);
+
+    color:
+        var(--color-text-secondary);
+
+    font-size:13px;
+
+    font-weight:600;
+
+    white-space:nowrap;
+
+    cursor:pointer;
+
+    transition:
+
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        color var(--transition-fast);
+
+}
+
+
+.owner-chip:hover {
+
+    background:
+        var(--color-hover);
+
+    color:
+        var(--color-text-primary);
+
+    border-color:
+        var(--color-border-strong);
+
+}
+
+
+.owner-chip.active {
+
+    background:
+        var(--color-accent);
+
+    border-color:
+        var(--color-accent);
+
+    color:
+        #ffffff;
+
+}
+
+
+/* ==================================================
+   Workspace Actions
+================================================== */
+
+.project-actions {
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-end;
+
+    gap:10px;
+
+    flex-shrink:0;
+
+}
+
+
+/*
+   Keep action buttons structurally consistent.
+   Actual button colors are controlled by buttons.css.
+*/
+
+.project-actions .btn {
+
+    min-height:40px;
+
+}
+
+
+/* ==================================================
+   Kanban Area
+================================================== */
+
+.kanban-wrapper {
+
+    width:100%;
+
+    margin-top:0;
+
+}
+
+
+/*
+   IMPORTANT:
+
+   Do NOT give the Kanban a fixed height.
+   Do NOT use overflow-y:auto.
+
+   The browser itself must scroll when tasks
+   exceed the viewport.
+*/
+
+.kanban-board {
+
+    width:100%;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    align-items:start;
+
+    gap:
+        var(--kanban-gap);
+
+}
+
+
+/* ==================================================
+   Kanban Column
+================================================== */
+
+.kanban-column {
+
+    min-width:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    background:
+        var(--color-surface);
+
+    border:
+        1px solid var(--color-border);
+
+    border-radius:
+        var(--radius-large);
+
+    box-shadow:
+        var(--shadow-small);
+
+}
+
+
+/* ==================================================
+   Kanban Column Header
+================================================== */
+
+.kanban-column-header {
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:12px;
+
+    padding:
+        18px 18px 16px;
+
+    border-bottom:
+        1px solid var(--color-border-light);
+
+}
+
+
+.kanban-column-title {
+
+    margin:0;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    letter-spacing:-0.01em;
+
+}
+
+
+.kanban-column-count {
+
+    min-width:26px;
+
+    height:26px;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:
+        0 8px;
+
+    border-radius:
+        var(--radius-pill);
+
+    background:
+        var(--color-surface-tertiary);
+
+    color:
+        var(--color-text-secondary);
+
+    font-size:12px;
+
+    font-weight:700;
+
+}
+
+
+/* ==================================================
+   Kanban Column Body
+================================================== */
+
+.kanban-column-body {
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+    padding:12px;
+
+}
+
+
+/*
+   No fixed height.
+   No internal scrollbar.
+*/
+
+.kanban-column-body {
+
+    overflow:visible;
+
+}
+
+
+/* ==================================================
+   Empty Column
+================================================== */
+
+.kanban-empty {
+
+    padding:
+        28px 16px;
+
+    text-align:center;
+
+    color:
+        var(--color-text-tertiary);
+
+    font-size:13px;
+
+}
+
+
+/* ==================================================
+   Modal Host Compatibility
+================================================== */
+
+.projects-page .modal-overlay {
+
+    position:fixed;
+
+}
+
+
+/*
+   Do not give modal content a dark background here.
+   Modal-specific CSS owns it.
+*/
+
+
+/* ==================================================
+   Responsive
+================================================== */
+
+@media (max-width:1100px) {
+
+    .projects-page {
+
+        padding:
+            24px 20px 56px;
+
+    }
+
+
+    .project-action-bar {
+
+        align-items:flex-start;
+
+        flex-direction:column;
+
+    }
+
+
+    .project-actions {
+
+        width:100%;
+
+        justify-content:flex-start;
+
+        flex-wrap:wrap;
+
+    }
+
+
+    .kanban-board {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+}
+
+
+@media (max-width:700px) {
+
+    .projects-page {
+
+        padding:
+            16px 14px 40px;
+
+    }
+
+
+    .project-selector {
+
+        padding:18px;
+
+    }
+
+
+    .project-selector-title {
+
+        font-size:24px;
+
+    }
+
+
+    .project-selector-header {
+
+        align-items:flex-start;
+
+        flex-direction:column;
+
+    }
+
+
+.project-top {
+
+    padding: 24px;
+
+    min-height: 112px;
+
+}
+
+
+.project-top h2 {
+
+    font-size: 28px;
+
+    line-height: 1.2;
+
+}
+
+    .project-action-bar {
+
+        padding:14px;
+
+    }
+
+
+    .project-actions {
+
+        width:100%;
+
+    }
+
+
+    .project-actions .btn {
+
+        flex:1;
+
+    }
+
+
+    .kanban-board {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+/* ==================================================
+   Kanban Summary Alignment
+   Align summary text with the content inside
+   the Kanban columns.
+================================================== */
+
+.kanban-wrapper > .kanban-header {
+
+    padding-left: 32px;
+    padding-right: 16px;
+
+    box-sizing: border-box;
+
+}

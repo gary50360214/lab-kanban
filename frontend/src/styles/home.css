@@ -1,0 +1,457 @@
+/*
+=================================
+ND2A33 Home Page
+Scoped Apple Inspired Style
+=================================
+*/
+
+
+.home-page{
+
+    width:100%;
+
+}
+
+
+
+/*
+---------------------------------
+Hero
+---------------------------------
+*/
+
+
+.home-hero{
+
+
+    min-height:
+
+        calc(100vh - 52px);
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    align-items:center;
+
+
+    text-align:center;
+
+
+
+    padding:
+
+        80px 24px;
+
+
+
+    background:
+
+
+        radial-gradient(
+
+            circle at top,
+
+            rgba(0,122,255,.18),
+
+            transparent 45%
+
+        ),
+
+
+        linear-gradient(
+
+            180deg,
+
+            #ffffff,
+
+            #f5f5f7
+
+        );
+
+
+}
+
+
+
+
+.home-hero-content{
+
+
+    max-width:
+
+        900px;
+
+
+}
+
+
+
+.home-hero-content h1{
+
+
+    font-size:
+
+        clamp(56px,8vw,96px);
+
+
+    font-weight:
+
+        700;
+
+
+    letter-spacing:
+
+        -0.06em;
+
+
+    color:
+
+        #1d1d1f;
+
+
+    margin-bottom:
+
+        8px;
+
+
+}
+
+
+
+.home-hero-content h2{
+
+
+    font-size:
+
+        clamp(32px,4vw,48px);
+
+
+    font-weight:
+
+        600;
+
+
+    letter-spacing:
+
+        -0.04em;
+
+
+    margin-bottom:
+
+        20px;
+
+
+}
+
+
+
+
+.home-hero-content p{
+
+
+    font-size:
+
+        24px;
+
+
+    color:
+
+        #6e6e73;
+
+
+}
+
+
+
+
+
+/*
+---------------------------------
+Hero Button
+---------------------------------
+*/
+
+
+.home-hero-actions{
+
+
+    margin-top:
+
+        40px;
+
+
+}
+
+
+
+.home-hero-button{
+
+
+    display:inline-flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+
+    padding:
+
+        12px 28px;
+
+
+
+    border-radius:
+
+        999px;
+
+
+
+    background:
+
+        #0071e3;
+
+
+
+    color:white;
+
+
+
+    font-size:
+
+        17px;
+
+
+
+    font-weight:
+
+        500;
+
+
+
+    transition:
+
+        .25s ease;
+
+
+}
+
+
+
+.home-hero-button:hover{
+
+
+    transform:
+
+        translateY(-2px);
+
+
+}
+
+
+
+
+
+/*
+---------------------------------
+Feature Cards
+---------------------------------
+*/
+
+
+.home-feature-section{
+
+
+    padding:
+
+        80px 32px;
+
+
+    background:
+
+        #f5f5f7;
+
+
+}
+
+
+
+
+.home-feature-grid{
+
+
+    max-width:
+
+        1200px;
+
+
+    margin:
+
+        0 auto;
+
+
+    display:grid;
+
+
+    grid-template-columns:
+
+        repeat(3,1fr);
+
+
+    gap:
+
+        32px;
+
+
+}
+
+
+
+
+
+.home-feature-card{
+
+
+    background:white;
+
+
+    border-radius:
+
+        28px;
+
+
+    padding:
+
+        36px;
+
+
+    min-height:
+
+        240px;
+
+
+
+    box-shadow:
+
+
+        0 8px 30px rgba(0,0,0,.06);
+
+
+
+    transition:
+
+        .25s ease;
+
+
+}
+
+
+
+
+.home-feature-card:hover{
+
+
+    transform:
+
+        translateY(-6px);
+
+
+    box-shadow:
+
+
+        0 16px 40px rgba(0,0,0,.12);
+
+
+}
+
+
+
+
+.home-feature-card h2{
+
+
+    font-size:
+
+        28px;
+
+
+    margin-bottom:
+
+        12px;
+
+
+}
+
+
+
+
+.home-feature-card p{
+
+
+    color:
+
+        #6e6e73;
+
+
+    margin-bottom:
+
+        32px;
+
+
+}
+
+
+
+
+
+.home-feature-button{
+
+
+    display:inline-flex;
+
+
+    padding:
+
+        10px 22px;
+
+
+    border-radius:
+
+        999px;
+
+
+    background:
+
+        #0071e3;
+
+
+    color:white;
+
+
+}
+
+
+
+
+
+@media(max-width:900px){
+
+
+    .home-feature-grid{
+
+
+        grid-template-columns:
+
+            1fr;
+
+
+    }
+
+
+}

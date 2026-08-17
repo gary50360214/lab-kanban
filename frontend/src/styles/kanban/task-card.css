@@ -1,0 +1,688 @@
+/*
+==================================================
+ND2A33
+Task Card
+Apple-inspired Minimal Design
+================================================== */
+
+
+/* ==============================================
+   Card
+============================================== */
+
+.task-card {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+
+    padding: 18px;
+
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e5ea;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.04);
+
+    color: #1d1d1f;
+
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease,
+        border-color 180ms ease;
+
+    cursor: pointer;
+
+}
+
+
+.task-card:hover {
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        #d2d2d7;
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.08);
+
+}
+
+
+/* ==============================================
+   Dragging
+============================================== */
+
+.task-card.is-dragging {
+
+    opacity: 0.55;
+
+    transform:
+        scale(0.98);
+
+    box-shadow:
+        0 16px 36px rgba(0, 0, 0, 0.12);
+
+}
+
+
+/* ==============================================
+   Header
+============================================== */
+
+.task-card-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+}
+
+
+/* ==============================================
+   Title
+============================================== */
+
+.task-card-title {
+
+    flex: 1;
+
+    min-width: 0;
+
+    margin: 0;
+
+    color:
+        #1d1d1f;
+
+    font-size:
+        16px;
+
+    font-weight:
+        600;
+
+    line-height:
+        1.4;
+
+    letter-spacing:
+        -0.01em;
+
+}
+
+
+/* ==============================================
+   Menu Button
+============================================== */
+
+.task-menu-button {
+
+    flex:
+        0 0 auto;
+
+    width:
+        30px;
+
+    height:
+        30px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        0;
+
+    border:
+        0;
+
+    border-radius:
+        50%;
+
+    background:
+        transparent;
+
+    color:
+        #86868b;
+
+    font-size:
+        20px;
+
+    line-height:
+        1;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 160ms ease,
+        color 160ms ease;
+
+}
+
+
+.task-menu-button:hover {
+
+    background:
+        #f5f5f7;
+
+    color:
+        #1d1d1f;
+
+}
+
+
+/* ==============================================
+   Meta Area
+============================================== */
+
+.task-card-meta {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        8px;
+
+}
+
+
+/* ==============================================
+   Owner
+============================================== */
+
+.task-meta-item {
+
+    font-size:
+        12px;
+
+    line-height:
+        1.4;
+
+}
+
+
+.task-owner {
+
+    color:
+        #6e6e73;
+
+}
+
+
+/* ==============================================
+   Priority
+============================================== */
+
+/*
+ * Priority is the only element allowed to carry
+ * noticeable semantic color.
+ *
+ * The colors are intentionally muted.
+ */
+
+.task-priority {
+
+    position:
+        relative;
+
+    padding-left:
+        10px;
+
+    color:
+        #6e6e73;
+
+    font-size:
+        12px;
+
+    font-weight:
+        500;
+
+}
+
+
+/*
+ * Small color indicator.
+ *
+ * Do NOT use a colored background.
+ */
+
+.task-priority::before {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    left:
+        0;
+
+    top:
+        50%;
+
+    width:
+        5px;
+
+    height:
+        5px;
+
+    border-radius:
+        50%;
+
+    transform:
+        translateY(-50%);
+
+}
+
+
+/* 緊急且重要 */
+
+.task-priority.priority-critical {
+
+    color:
+        #c9342f;
+
+}
+
+
+.task-priority.priority-critical::before {
+
+    background:
+        #c9342f;
+
+}
+
+
+/* 緊急但不重要 */
+
+.task-priority.priority-urgent {
+
+    color:
+        #b76e00;
+
+}
+
+
+.task-priority.priority-urgent::before {
+
+    background:
+        #d98b00;
+
+}
+
+
+/* 不緊急但重要 */
+
+.task-priority.priority-important {
+
+    color:
+        #8b6800;
+
+}
+
+
+.task-priority.priority-important::before {
+
+    background:
+        #c4a000;
+
+}
+
+
+/* 不緊急也不重要 */
+
+.task-priority.priority-low {
+
+    color:
+        #86868b;
+
+}
+
+
+.task-priority.priority-low::before {
+
+    background:
+        #aeaeb2;
+
+}
+
+
+/* ==============================================
+   Description
+============================================== */
+
+.task-card-description {
+
+    margin:
+        0;
+
+    color:
+        #6e6e73;
+
+    font-size:
+        13px;
+
+    line-height:
+        1.55;
+
+    display:
+        -webkit-box;
+
+    -webkit-line-clamp:
+        3;
+
+    -webkit-box-orient:
+        vertical;
+
+    overflow:
+        hidden;
+
+}
+
+
+/* ==============================================
+   Dates
+============================================== */
+
+.task-card-dates {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        6px;
+
+    color:
+        #86868b;
+
+    font-size:
+        12px;
+
+}
+
+
+.date-arrow {
+
+    color:
+        #c7c7cc;
+
+}
+
+
+/* ==============================================
+   Checklist
+============================================== */
+
+.task-card-checklist {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        7px;
+
+}
+
+
+.checklist-summary {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        12px;
+
+    color:
+        #86868b;
+
+    font-size:
+        12px;
+
+}
+
+
+.checklist-summary strong {
+
+    color:
+        #6e6e73;
+
+    font-weight:
+        600;
+
+}
+
+
+/* ==============================================
+   Actions
+============================================== */
+
+.task-card-actions {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    padding-top:
+        4px;
+
+}
+
+
+.task-card-actions .btn {
+
+    flex:
+        0 0 auto;
+
+}
+
+
+/* ==============================================
+   Danger Button
+============================================== */
+
+.task-card-actions .danger-button {
+
+    color:
+        #c9342f;
+
+}
+
+
+/* ==============================================
+   Responsive
+============================================== */
+
+@media (
+    max-width: 600px
+) {
+
+    .task-card {
+
+        padding:
+            16px;
+
+        border-radius:
+            16px;
+
+    }
+
+
+    .task-card-actions {
+
+        flex-wrap:
+            wrap;
+
+    }
+
+}
+
+/* ==============================================
+   Checklist Item
+============================================== */
+
+.task-card-checklist-item {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    min-height:
+        28px;
+
+}
+
+
+.task-card-checklist-checkbox {
+
+    flex:
+        0 0 22px;
+
+    width:
+        22px;
+
+    height:
+        22px;
+
+    min-width:
+        22px;
+
+    min-height:
+        22px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        0;
+
+    margin:
+        0;
+
+    border:
+        1px solid #c7c7cc;
+
+    border-radius:
+        5px;
+
+    background:
+        #ffffff;
+
+    color:
+        #1d1d1f;
+
+    font-size:
+        15px;
+
+    line-height:
+        1;
+
+    cursor:
+        pointer;
+
+    box-sizing:
+        border-box;
+
+    transition:
+        background 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease;
+
+}
+
+
+.task-card-checklist-checkbox:hover {
+
+    border-color:
+        #86868b;
+
+    background:
+        #f5f5f7;
+
+}
+
+
+/* ==============================================
+   Checklist Text
+============================================== */
+
+.task-card-checklist-text {
+
+    flex:
+        1;
+
+    min-width:
+        0;
+
+    color:
+        #1d1d1f;
+
+    font-size:
+        13px;
+
+    line-height:
+        1.45;
+
+}
+
+
+.task-card-checklist-item.completed
+.task-card-checklist-text {
+
+    color:
+        #86868b;
+
+    text-decoration:
+        line-through;
+
+}

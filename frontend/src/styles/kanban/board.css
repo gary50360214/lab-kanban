@@ -1,0 +1,55 @@
+/*
+==================================================
+ND2A33
+Kanban Board
+Apple Dark Glass
+==================================================
+*/
+
+
+.kanban-board{
+
+    margin-top:28px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+
+    gap:22px;
+
+    width:100%;
+
+    align-items:start;
+
+}
+
+
+
+/* ==========================================
+   Responsive
+========================================== */
+
+@media(max-width:1400px){
+
+    .kanban-board{
+
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+
+    }
+
+}
+
+
+
+@media(max-width:760px){
+
+    .kanban-board{
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}

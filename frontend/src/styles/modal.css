@@ -1,0 +1,1254 @@
+/* =========================================================
+   Modal System
+   Clean Apple-inspired version
+   ========================================================= */
+
+
+/* =========================================================
+   Overlay
+   ========================================================= */
+
+.modal-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 32px;
+
+    box-sizing: border-box;
+
+    background:
+        rgba(15, 23, 42, 0.42);
+
+    backdrop-filter:
+        blur(14px);
+
+    -webkit-backdrop-filter:
+        blur(14px);
+
+}
+
+
+/* =========================================================
+   Modal Surface
+   ========================================================= */
+
+.modal-overlay > section,
+.modal-overlay > .modal-content,
+.modal-overlay > .task-modal,
+.modal-overlay > .template-manager-modal,
+.modal-overlay > .template-editor-modal {
+
+    position: relative;
+
+    width:
+        min(
+            720px,
+            calc(100vw - 64px)
+        );
+
+    max-width: 100%;
+
+    height: auto;
+
+    max-height:
+        calc(100vh - 64px);
+
+    min-height: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+    background:
+        #ffffff;
+
+    color:
+        #1d1d1f;
+
+    border:
+        1px solid rgba(0, 0, 0, 0.08);
+
+    border-radius:
+        24px;
+
+    box-shadow:
+        0 32px 80px rgba(0, 0, 0, 0.20),
+        0 8px 24px rgba(0, 0, 0, 0.10);
+
+}
+
+
+/* =========================================================
+   Header
+   ========================================================= */
+
+.modal-header {
+
+    flex:
+        0 0 auto;
+
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    justify-content:
+        space-between;
+
+    gap:
+        24px;
+
+    padding:
+        28px 32px 22px;
+
+    box-sizing:
+        border-box;
+
+    background:
+        #ffffff;
+
+    border-bottom:
+        1px solid #e8e8ed;
+
+}
+
+
+.modal-header h2 {
+
+    margin:
+        0;
+
+    color:
+        #1d1d1f;
+
+    font-size:
+        24px;
+
+    font-weight:
+        600;
+
+    line-height:
+        1.25;
+
+    letter-spacing:
+        -0.02em;
+
+}
+
+
+.modal-subtitle {
+
+    margin:
+        7px 0 0;
+
+    color:
+        #6e6e73;
+
+    font-size:
+        14px;
+
+    line-height:
+        1.5;
+
+}
+
+
+/* =========================================================
+   Close Button
+   ========================================================= */
+
+.close-button {
+
+    flex:
+        0 0 auto;
+
+    width:
+        32px;
+
+    height:
+        32px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        0;
+
+    border:
+        1px solid #d2d2d7;
+
+    border-radius:
+        50%;
+
+    background:
+        #f5f5f7;
+
+    color:
+        #6e6e73;
+
+    font-size:
+        20px;
+
+    line-height:
+        1;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        transform 160ms ease;
+
+}
+
+
+.close-button:hover {
+
+    background:
+        #e8e8ed;
+
+    border-color:
+        #c7c7cc;
+
+    color:
+        #1d1d1f;
+
+}
+
+
+.close-button:active {
+
+    transform:
+        scale(.94);
+
+}
+
+
+/* =========================================================
+   Modal Body
+   IMPORTANT:
+   This is the only area that should scroll.
+   ========================================================= */
+
+.modal-body {
+
+    flex:
+        1 1 auto;
+
+    min-height:
+        0;
+
+    width:
+        100%;
+
+    box-sizing:
+        border-box;
+
+    overflow-y:
+        auto;
+
+    overflow-x:
+        hidden;
+
+    padding:
+        28px 32px;
+
+    background:
+        #ffffff;
+
+    color:
+        #1d1d1f;
+
+    -webkit-overflow-scrolling:
+        touch;
+
+}
+
+
+/* =========================================================
+   Scrollbar
+   ========================================================= */
+
+.modal-body::-webkit-scrollbar {
+
+    width:
+        8px;
+
+}
+
+
+.modal-body::-webkit-scrollbar-track {
+
+    background:
+        transparent;
+
+}
+
+
+.modal-body::-webkit-scrollbar-thumb {
+
+    background:
+        #c7c7cc;
+
+    border-radius:
+        999px;
+
+}
+
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+
+    background:
+        #aeaeb2;
+
+}
+
+
+/* =========================================================
+   Form
+   ========================================================= */
+
+.form-group {
+
+    margin-bottom:
+        20px;
+
+}
+
+
+.form-group:last-child {
+
+    margin-bottom:
+        0;
+
+}
+
+
+.form-group label {
+
+    display:
+        block;
+
+    margin-bottom:
+        7px;
+
+    color:
+        #1d1d1f;
+
+    font-size:
+        14px;
+
+    font-weight:
+        500;
+
+    line-height:
+        1.4;
+
+}
+
+
+/* =========================================================
+   Inputs
+   ========================================================= */
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+
+    width:
+        100%;
+
+    box-sizing:
+        border-box;
+
+    border:
+        1px solid #c7c7cc;
+
+    border-radius:
+        12px;
+
+    background:
+        #ffffff;
+
+    color:
+        #1d1d1f;
+
+    font-family:
+        inherit;
+
+    font-size:
+        15px;
+
+    line-height:
+        1.5;
+
+    outline:
+        none;
+
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        background 160ms ease;
+
+}
+
+
+.form-group input,
+.form-group select {
+
+    min-height:
+        46px;
+
+    padding:
+        10px 13px;
+
+}
+
+
+.form-group textarea {
+
+    min-height:
+        120px;
+
+    padding:
+        12px 13px;
+
+    resize:
+        vertical;
+
+}
+
+
+/* =========================================================
+   Input States
+   ========================================================= */
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+
+    border-color:
+        #a1a1a6;
+
+}
+
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+
+    border-color:
+        #0071e3;
+
+    box-shadow:
+        0 0 0 4px rgba(0, 113, 227, 0.12);
+
+    background:
+        #ffffff;
+
+}
+
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+
+    color:
+        #86868b;
+
+}
+
+
+/* =========================================================
+   Select
+   ========================================================= */
+
+.form-group select {
+
+    cursor:
+        pointer;
+
+}
+
+
+.form-group select option {
+
+    background:
+        #ffffff;
+
+    color:
+        #1d1d1f;
+
+}
+
+
+/* =========================================================
+   Two Column Form
+   ========================================================= */
+
+.form-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap:
+        18px;
+
+}
+
+
+/* =========================================================
+   Field Header
+   ========================================================= */
+
+.field-header {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        16px;
+
+    margin-bottom:
+        8px;
+
+}
+
+
+.field-header label {
+
+    margin:
+        0;
+
+}
+
+
+.field-value {
+
+    color:
+        #0071e3;
+
+    font-size:
+        14px;
+
+    font-weight:
+        600;
+
+}
+
+
+/* =========================================================
+   Range
+   ========================================================= */
+
+.form-group input[type="range"] {
+
+    min-height:
+        auto;
+
+    padding:
+        0;
+
+    border:
+        0;
+
+    accent-color:
+        #0071e3;
+
+    box-shadow:
+        none;
+
+}
+
+
+/* =========================================================
+   Checklist
+   ========================================================= */
+
+.checklist-editor {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        10px;
+
+    padding:
+        14px;
+
+    border:
+        1px solid #e8e8ed;
+
+    border-radius:
+        14px;
+
+    background:
+        #f5f5f7;
+
+}
+
+
+.checklist-editor-item {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        22px minmax(0, 1fr) auto;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+}
+
+
+.checklist-editor-item input[type="checkbox"] {
+
+    width:
+        18px;
+
+    height:
+        18px;
+
+    margin:
+        0;
+
+    accent-color:
+        #0071e3;
+
+}
+
+
+.checklist-editor-item input[type="text"] {
+
+    min-height:
+        42px;
+
+}
+
+
+.checklist-empty {
+
+    padding:
+        18px;
+
+    text-align:
+        center;
+
+    color:
+        #86868b;
+
+    font-size:
+        14px;
+
+}
+
+
+/* =========================================================
+   Modal Footer
+   IMPORTANT:
+   Footer stays fixed while body scrolls.
+   ========================================================= */
+
+.modal-buttons {
+
+    flex:
+        0 0 auto;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        flex-end;
+
+    gap:
+        12px;
+
+    padding:
+        18px 32px 24px;
+
+    box-sizing:
+        border-box;
+
+    background:
+        #ffffff;
+
+    border-top:
+        1px solid #e8e8ed;
+
+}
+
+
+/* =========================================================
+   Buttons
+   ========================================================= */
+
+.modal-buttons .btn,
+.modal-buttons button {
+
+    white-space:
+        nowrap;
+
+}
+
+
+/* =========================================================
+   Template Manager
+   ========================================================= */
+
+.template-manager-modal {
+
+    width:
+        min(
+            820px,
+            calc(100vw - 64px)
+        );
+
+}
+
+
+.template-toolbar {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+
+    margin-bottom:
+        20px;
+
+}
+
+
+.template-toolbar strong {
+
+    margin-right:
+        6px;
+
+    color:
+        #1d1d1f;
+
+    font-size:
+        20px;
+
+}
+
+
+.template-toolbar span {
+
+    color:
+        #6e6e73;
+
+    font-size:
+        14px;
+
+}
+
+
+/* =========================================================
+   Template List
+   ========================================================= */
+
+.template-list {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        12px;
+
+}
+
+
+.template-item {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+
+    padding:
+        18px 20px;
+
+    background:
+        #ffffff;
+
+    border:
+        1px solid #d2d2d7;
+
+    border-radius:
+        16px;
+
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+
+}
+
+
+.template-item:hover {
+
+    border-color:
+        #b8b8bd;
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.06);
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+.template-info {
+
+    min-width:
+        0;
+
+}
+
+
+.template-info h3 {
+
+    margin:
+        0 0 6px;
+
+    color:
+        #1d1d1f;
+
+    font-size:
+        17px;
+
+    font-weight:
+        600;
+
+}
+
+
+.template-info p {
+
+    margin:
+        8px 0 0;
+
+    color:
+        #6e6e73;
+
+    font-size:
+        14px;
+
+}
+
+
+.template-meta {
+
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        8px;
+
+}
+
+
+.template-meta span {
+
+    padding:
+        4px 9px;
+
+    border:
+        1px solid #d2d2d7;
+
+    border-radius:
+        999px;
+
+    background:
+        #f5f5f7;
+
+    color:
+        #6e6e73;
+
+    font-size:
+        12px;
+
+}
+
+
+.template-actions {
+
+    flex:
+        0 0 auto;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+}
+
+
+/* =========================================================
+   Template Empty
+   ========================================================= */
+
+.template-empty {
+
+    padding:
+        56px 24px;
+
+    text-align:
+        center;
+
+    border:
+        1px dashed #c7c7cc;
+
+    border-radius:
+        18px;
+
+    background:
+        #f5f5f7;
+
+}
+
+
+.template-empty-icon {
+
+    width:
+        48px;
+
+    height:
+        48px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    margin:
+        0 auto 16px;
+
+    border:
+        1px solid #d2d2d7;
+
+    border-radius:
+        50%;
+
+    background:
+        #ffffff;
+
+    color:
+        #0071e3;
+
+    font-size:
+        24px;
+
+}
+
+
+.template-empty h3 {
+
+    margin:
+        0 0 8px;
+
+    color:
+        #1d1d1f;
+
+    font-size:
+        18px;
+
+}
+
+
+.template-empty p {
+
+    max-width:
+        420px;
+
+    margin:
+        0 auto 20px;
+
+    color:
+        #6e6e73;
+
+    font-size:
+        14px;
+
+    line-height:
+        1.6;
+
+}
+
+
+/* =========================================================
+   Template Editor
+   ========================================================= */
+
+.template-editor-overlay {
+
+    z-index:
+        1100;
+
+}
+
+
+.template-editor-modal {
+
+    width:
+        min(
+            720px,
+            calc(100vw - 64px)
+        );
+
+}
+
+
+.template-editor-form {
+
+    min-height:
+        0;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    flex:
+        1 1 auto;
+
+}
+
+
+.template-editor-form .modal-body {
+
+    min-height:
+        0;
+
+    flex:
+        1 1 auto;
+
+    overflow-y:
+        auto;
+
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .modal-overlay {
+
+        padding:
+            16px;
+
+        align-items:
+            center;
+
+    }
+
+
+    .modal-overlay > section,
+    .modal-overlay > .modal-content,
+    .modal-overlay > .task-modal,
+    .modal-overlay > .template-manager-modal,
+    .modal-overlay > .template-editor-modal {
+
+        width:
+            100%;
+
+        max-width:
+            none;
+
+        max-height:
+            calc(100vh - 32px);
+
+        border-radius:
+            20px;
+
+    }
+
+
+    .modal-header {
+
+        padding:
+            22px 20px 18px;
+
+    }
+
+
+    .modal-header h2 {
+
+        font-size:
+            21px;
+
+    }
+
+
+    .modal-body {
+
+        padding:
+            22px 20px;
+
+    }
+
+
+    .modal-buttons {
+
+        padding:
+            16px 20px 20px;
+
+    }
+
+
+    .form-grid {
+
+        grid-template-columns:
+            1fr;
+
+        gap:
+            0;
+
+    }
+
+
+    .template-item {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+    }
+
+
+    .template-actions {
+
+        width:
+            100%;
+
+    }
+
+
+    .template-actions .btn {
+
+        flex:
+            1;
+
+    }
+
+}
+
+/* =========================================================
+   Task Modal
+   Keep header / footer fixed and allow body scrolling
+   ========================================================= */
+
+.task-modal-form {
+
+    min-height: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    flex: 1 1 auto;
+
+}
+
+
+/* =========================================================
+   Task Modal Body
+   ========================================================= */
+
+.task-modal-form .modal-body {
+
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    overflow-y: auto;
+
+}
+
+
+/* =========================================================
+   Task Modal Footer
+   ========================================================= */
+
+.task-modal-form .modal-buttons {
+
+    flex-shrink: 0;
+
+}
