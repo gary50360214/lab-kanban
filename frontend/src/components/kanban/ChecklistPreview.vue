@@ -69,7 +69,7 @@
 
         <span>
 
-            {{ item.title }}
+            {{ item.text }}
 
         </span>
 

@@ -5,6 +5,33 @@ import {
 
 /*
 |--------------------------------------------------------------------------
+| API
+|--------------------------------------------------------------------------
+*/
+
+const API_BASE = "/api"
+
+
+/*
+|--------------------------------------------------------------------------
+| WebSocket
+|--------------------------------------------------------------------------
+*/
+
+function getWebSocketUrl() {
+
+    const protocol =
+        window.location.protocol === "https:"
+            ? "wss:"
+            : "ws:"
+
+    return `${protocol}//${window.location.host}/ws`
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
 | Status
 |--------------------------------------------------------------------------
 */
@@ -85,7 +112,6 @@ export function normalizeTaskStatus(status) {
         "to_do":
             "todo",
 
-
         "running":
             "running",
 
@@ -98,13 +124,11 @@ export function normalizeTaskStatus(status) {
         "in_progress":
             "running",
 
-
         "waiting":
             "waiting",
 
         "wait":
             "waiting",
-
 
         "completed":
             "completed",
@@ -132,9 +156,7 @@ export function normalizeTaskStatus(status) {
 function clone(value) {
 
     return JSON.parse(
-
         JSON.stringify(value)
-
     )
 
 }
@@ -265,6 +287,734 @@ export function useTasks() {
 
     /*
     |--------------------------------------------------------------------------
+    | WebSocket State
+    |--------------------------------------------------------------------------
+    */
+
+    const websocket =
+        ref(null)
+
+
+    const websocketConnected =
+        ref(false)
+
+
+    let reconnectTimer =
+        null
+
+
+    let currentProjectId =
+        null
+
+/*
+|--------------------------------------------------------------------------
+| WebSocket Message Handler
+|--------------------------------------------------------------------------
+*/
+
+function handleWebSocketMessage(
+    message,
+    project
+) {
+
+    if (
+        !message ||
+        !project
+    ) {
+
+        return
+
+    }
+
+
+    /*
+     * Only process events belonging
+     * to the currently opened project.
+     */
+
+    if (
+        Number(message.project_id) !==
+        Number(project.id)
+    ) {
+
+        return
+
+    }
+
+
+    if (
+        !Array.isArray(project.tasks)
+    ) {
+
+        project.tasks = []
+
+    }
+
+
+    /*
+     * ----------------------------------------------------------
+     * Task Created
+     * ----------------------------------------------------------
+     */
+
+    if (
+        message.type ===
+        "task.created"
+    ) {
+
+        const incoming =
+            normalizeTask(
+                message.data
+            )
+
+
+        const exists =
+            project.tasks.some(
+                task =>
+                    Number(task.id) ===
+                    Number(incoming.id)
+            )
+
+
+        if (!exists) {
+
+            project.tasks.push(
+                incoming
+            )
+
+        }
+
+
+        return
+
+    }
+
+
+    /*
+     * ----------------------------------------------------------
+     * Task Updated
+     * ----------------------------------------------------------
+     */
+
+    if (
+        message.type ===
+        "task.updated"
+    ) {
+
+        const incoming =
+            normalizeTask(
+                message.data
+            )
+
+
+        const index =
+            project.tasks.findIndex(
+
+                task =>
+                    Number(task.id) ===
+                    Number(incoming.id)
+
+            )
+
+
+        if (index === -1) {
+
+            project.tasks.push(
+                incoming
+            )
+
+        }
+        else {
+
+            /*
+             * Replace the whole task.
+             *
+             * Backend task.updated contains the
+             * latest checklist snapshot.
+             */
+
+            project.tasks[index] =
+                incoming
+
+        }
+
+
+        return
+
+    }
+
+
+    /*
+     * ----------------------------------------------------------
+     * Task Deleted
+     * ----------------------------------------------------------
+     */
+
+    if (
+        message.type ===
+        "task.deleted"
+    ) {
+
+        const taskId =
+            Number(
+                message.data?.id
+            )
+
+
+        project.tasks =
+            project.tasks.filter(
+
+                task =>
+                    Number(task.id) !==
+                    taskId
+
+            )
+
+
+        return
+
+    }
+
+
+    /*
+     * ----------------------------------------------------------
+     * Checklist Created
+     * ----------------------------------------------------------
+     */
+
+    if (
+        message.type ===
+        "checklist.created"
+    ) {
+
+        const taskId =
+            Number(
+                message.task_id
+            )
+
+
+        const incoming =
+            message.data
+
+
+        if (!incoming) {
+
+            return
+
+        }
+
+
+        const task =
+            project.tasks.find(
+
+                item =>
+                    Number(item.id) ===
+                    taskId
+
+            )
+
+
+        if (!task) {
+
+            return
+
+        }
+
+
+        if (
+            !Array.isArray(
+                task.checklist
+            )
+        ) {
+
+            task.checklist = []
+
+        }
+
+
+        const exists =
+            task.checklist.some(
+
+                item =>
+                    Number(item.id) ===
+                    Number(incoming.id)
+
+            )
+
+
+        if (!exists) {
+
+            task.checklist.push({
+
+                id:
+                    incoming.id,
+
+                text:
+                    String(
+                        incoming.text ?? ""
+                    ).trim(),
+
+                completed:
+                    Boolean(
+                        incoming.completed
+                    )
+
+            })
+
+        }
+
+
+        return
+
+    }
+
+
+    /*
+     * ----------------------------------------------------------
+     * Checklist Updated
+     * ----------------------------------------------------------
+     */
+
+    if (
+        message.type ===
+        "checklist.updated"
+    ) {
+
+        const taskId =
+            Number(
+                message.task_id
+            )
+
+
+        const incoming =
+            message.data
+
+
+        if (!incoming) {
+
+            return
+
+        }
+
+
+        const task =
+            project.tasks.find(
+
+                item =>
+                    Number(item.id) ===
+                    taskId
+
+            )
+
+
+        if (!task) {
+
+            return
+
+        }
+
+
+        if (
+            !Array.isArray(
+                task.checklist
+            )
+        ) {
+
+            task.checklist = []
+
+        }
+
+
+        const index =
+            task.checklist.findIndex(
+
+                item =>
+                    Number(item.id) ===
+                    Number(incoming.id)
+
+            )
+
+
+        const normalizedItem = {
+
+            id:
+                incoming.id,
+
+            text:
+                String(
+                    incoming.text ?? ""
+                ).trim(),
+
+            completed:
+                Boolean(
+                    incoming.completed
+                )
+
+        }
+
+
+        if (index === -1) {
+
+            task.checklist.push(
+                normalizedItem
+            )
+
+        }
+        else {
+
+            task.checklist[index] =
+                normalizedItem
+
+        }
+
+
+        return
+
+    }
+
+
+    /*
+     * ----------------------------------------------------------
+     * Checklist Deleted
+     * ----------------------------------------------------------
+     */
+
+    if (
+        message.type ===
+        "checklist.deleted"
+    ) {
+
+        const taskId =
+            Number(
+                message.task_id
+            )
+
+
+        const checklistId =
+            Number(
+                message.data?.id
+            )
+
+
+        const task =
+            project.tasks.find(
+
+                item =>
+                    Number(item.id) ===
+                    taskId
+
+            )
+
+
+        if (!task) {
+
+            return
+
+        }
+
+
+        if (
+            !Array.isArray(
+                task.checklist
+            )
+        ) {
+
+            return
+
+        }
+
+
+        task.checklist =
+            task.checklist.filter(
+
+                item =>
+                    Number(item.id) !==
+                    checklistId
+
+            )
+
+
+        return
+
+    }
+
+}
+
+    /*
+    |--------------------------------------------------------------------------
+    | Connect WebSocket
+    |--------------------------------------------------------------------------
+    */
+
+    function connectWebSocket(
+        project
+    ) {
+
+        if (!project?.id) {
+
+            return
+
+        }
+
+
+        currentProjectId =
+            project.id
+
+
+        /*
+         * Close previous connection.
+         */
+
+        disconnectWebSocket()
+
+
+        const url =
+            getWebSocketUrl()
+
+
+        console.log(
+            "[WebSocket] Connecting:",
+            url
+        )
+
+
+        const socket =
+            new WebSocket(url)
+
+
+        websocket.value =
+            socket
+
+
+        socket.onopen = () => {
+
+            websocketConnected.value =
+                true
+
+
+            console.log(
+                "[WebSocket] Connected"
+            )
+
+        }
+
+
+        socket.onmessage = event => {
+
+            try {
+
+                const message =
+                    JSON.parse(
+                        event.data
+                    )
+
+
+                console.log(
+                    "[WebSocket] Message:",
+                    message
+                )
+
+
+                handleWebSocketMessage(
+                    message,
+                    project
+                )
+
+            }
+            catch (error) {
+
+                console.error(
+                    "[WebSocket] Invalid message:",
+                    error
+                )
+
+            }
+
+        }
+
+
+        socket.onerror = error => {
+
+            console.error(
+                "[WebSocket] Error:",
+                error
+            )
+
+        }
+
+
+        socket.onclose = () => {
+
+            websocketConnected.value =
+                false
+
+
+            websocket.value =
+                null
+
+
+            console.log(
+                "[WebSocket] Disconnected"
+            )
+
+
+            /*
+             * Automatically reconnect.
+             *
+             * This is important because the backend
+             * container can restart during development.
+             */
+
+            if (
+                currentProjectId ===
+                project.id
+            ) {
+
+                clearTimeout(
+                    reconnectTimer
+                )
+
+
+                reconnectTimer =
+                    setTimeout(
+
+                        () => {
+
+                            if (
+                                currentProjectId ===
+                                project.id
+                            ) {
+
+                                connectWebSocket(
+                                    project
+                                )
+
+                            }
+
+                        },
+
+                        3000
+
+                    )
+
+            }
+
+        }
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Disconnect WebSocket
+    |--------------------------------------------------------------------------
+    */
+
+    function disconnectWebSocket() {
+
+        currentProjectId =
+            null
+
+
+        clearTimeout(
+            reconnectTimer
+        )
+
+
+        reconnectTimer =
+            null
+
+
+        if (
+            websocket.value
+        ) {
+
+            try {
+
+                websocket.value.close()
+
+            }
+            catch (error) {
+
+                console.error(
+                    "[WebSocket] Close error:",
+                    error
+                )
+
+            }
+
+        }
+
+
+        websocket.value =
+            null
+
+
+        websocketConnected.value =
+            false
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Load Tasks
+    |--------------------------------------------------------------------------
+    */
+
+    async function loadTasks(
+        projectId
+    ) {
+
+        if (!projectId) {
+
+            return []
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_BASE}/projects/${projectId}/tasks`
+                )
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `Failed to load tasks: ${response.status}`
+                )
+
+            }
+
+
+            const tasks =
+                await response.json()
+
+
+            return tasks.map(
+                normalizeTask
+            )
+
+        }
+        catch (error) {
+
+            console.error(
+                "Failed to load tasks:",
+                error
+            )
+
+            return []
+
+        }
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
     | Start Creating
     |--------------------------------------------------------------------------
     */
@@ -300,11 +1050,257 @@ export function useTasks() {
 
     /*
     |--------------------------------------------------------------------------
+    | Sync Checklist
+    |--------------------------------------------------------------------------
+    */
+
+    async function syncChecklist(
+        taskId,
+        checklist = []
+    ) {
+
+        if (!taskId) {
+
+            return false
+
+        }
+
+
+        const items =
+            Array.isArray(checklist)
+                ? checklist
+                : []
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_BASE}/tasks/${taskId}/checklist`
+                )
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `Failed to load checklist: ${response.status}`
+                )
+
+            }
+
+
+            const existing =
+                await response.json()
+
+
+            const existingIds =
+                new Set(
+
+                    existing.map(
+                        item =>
+                            Number(item.id)
+                    )
+
+                )
+
+
+            const submittedIds =
+                new Set(
+
+                    items
+
+                        .filter(
+
+                            item =>
+                                Number.isInteger(
+                                    Number(item.id)
+                                ) &&
+                                existingIds.has(
+                                    Number(item.id)
+                                )
+
+                        )
+
+                        .map(
+
+                            item =>
+                                Number(item.id)
+
+                        )
+
+                )
+
+
+            for (
+                const item of existing
+            ) {
+
+                if (
+                    !submittedIds.has(
+                        Number(item.id)
+                    )
+                ) {
+
+                    const deleteResponse =
+                        await fetch(
+                            `${API_BASE}/tasks/${taskId}/checklist/${item.id}`,
+                            {
+                                method: "DELETE"
+                            }
+                        )
+
+
+                    if (
+                        !deleteResponse.ok
+                    ) {
+
+                        throw new Error(
+                            `Failed to delete checklist item: ${deleteResponse.status}`
+                        )
+
+                    }
+
+                }
+
+            }
+
+
+            for (
+                const item of items
+            ) {
+
+                const text =
+                    String(
+                        item.text ?? ""
+                    ).trim()
+
+
+                if (!text) {
+
+                    continue
+
+                }
+
+
+                const numericId =
+                    Number(item.id)
+
+
+                if (
+                    Number.isInteger(
+                        numericId
+                    ) &&
+                    existingIds.has(
+                        numericId
+                    )
+                ) {
+
+                    const updateResponse =
+                        await fetch(
+                            `${API_BASE}/tasks/${taskId}/checklist/${numericId}`,
+                            {
+                                method: "PUT",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify({
+
+                                        text,
+
+                                        completed:
+                                            Boolean(
+                                                item.completed
+                                            )
+
+                                    })
+
+                            }
+                        )
+
+
+                    if (
+                        !updateResponse.ok
+                    ) {
+
+                        throw new Error(
+                            `Failed to update checklist item: ${updateResponse.status}`
+                        )
+
+                    }
+
+                }
+                else {
+
+                    const createResponse =
+                        await fetch(
+                            `${API_BASE}/tasks/${taskId}/checklist`,
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify({
+
+                                        text,
+
+                                        completed:
+                                            Boolean(
+                                                item.completed
+                                            )
+
+                                    })
+
+                            }
+                        )
+
+
+                    if (
+                        !createResponse.ok
+                    ) {
+
+                        throw new Error(
+                            `Failed to create checklist item: ${createResponse.status}`
+                        )
+
+                    }
+
+                }
+
+            }
+
+
+            return true
+
+        }
+        catch (error) {
+
+            console.error(
+                "Failed to sync checklist:",
+                error
+            )
+
+            return false
+
+        }
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
     | Save Task
     |--------------------------------------------------------------------------
     */
 
-    function saveTask(
+    async function saveTask(
         task,
         project
     ) {
@@ -333,10 +1329,6 @@ export function useTasks() {
         }
 
 
-        /*
-         * Validate dates.
-         */
-
         if (
 
             task.start &&
@@ -356,76 +1348,340 @@ export function useTasks() {
         }
 
 
-        if (
-            !Array.isArray(
-                project.tasks
-            )
-        ) {
-
-            project.tasks = []
-
-        }
-
-
         const data =
             normalizeTask(task)
 
 
         /*
-         * Edit existing task.
+         * ----------------------------------------------------------
+         * Update
+         * ----------------------------------------------------------
          */
 
         if (data.id) {
 
-            const index =
-                project.tasks.findIndex(
+            try {
 
-                    item =>
-                        item.id === data.id
+                const response =
+                    await fetch(
+                        `${API_BASE}/tasks/${data.id}`,
+                        {
+                            method: "PUT",
 
-                )
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    name:
+                                        data.name,
+
+                                    owner:
+                                        data.owner || null,
+
+                                    status:
+                                        data.status,
+
+                                    priority:
+                                        data.priority,
+
+                                    start:
+                                        data.start || null,
+
+                                    end:
+                                        data.end || null,
+
+                                    description:
+                                        data.description || null,
+
+                                    progress:
+                                        data.progress
+
+                                })
+
+                        }
+                    )
 
 
-            if (index !== -1) {
+                if (!response.ok) {
 
-                project.tasks[index] =
-                    data
+                    throw new Error(
+                        `Failed to update task: ${response.status}`
+                    )
+
+                }
+
+
+                const updatedTask =
+                    await response.json()
+
+
+                const checklistSuccess =
+                    await syncChecklist(
+                        data.id,
+                        data.checklist
+                    )
+
+
+                if (!checklistSuccess) {
+
+                    window.alert(
+                        "任務已更新，但子任務同步失敗"
+                    )
+
+                    return false
+
+                }
+
+
+                const refreshedResponse =
+                    await fetch(
+                        `${API_BASE}/tasks/${data.id}`
+                    )
+
+
+                if (!refreshedResponse.ok) {
+
+                    throw new Error(
+                        `Failed to reload task: ${refreshedResponse.status}`
+                    )
+
+                }
+
+
+                const refreshedTask =
+                    await refreshedResponse.json()
+
+
+                const normalized =
+                    normalizeTask(
+                        refreshedTask
+                    )
+
+
+                if (
+                    !Array.isArray(
+                        project.tasks
+                    )
+                ) {
+
+                    project.tasks = []
+
+                }
+
+
+                const index =
+                    project.tasks.findIndex(
+
+                        item =>
+                            Number(item.id) ===
+                            Number(normalized.id)
+
+                    )
+
+
+                if (index !== -1) {
+
+                    project.tasks[index] =
+                        normalized
+
+                }
+                else {
+
+                    project.tasks.push(
+                        normalized
+                    )
+
+                }
+
+
+                editingTask.value =
+                    null
+
+
+                return normalized
 
             }
-            else {
+            catch (error) {
 
-                project.tasks.push(
-                    data
+                console.error(
+                    "Failed to update task:",
+                    error
                 )
+
+                window.alert(
+                    "更新任務失敗"
+                )
+
+                return false
 
             }
 
         }
+
 
         /*
-         * Create new task.
+         * ----------------------------------------------------------
+         * Create
+         * ----------------------------------------------------------
          */
 
-        else {
+        try {
 
-            data.id =
-                Date.now()
+            const response =
+                await fetch(
+                    `${API_BASE}/projects/${project.id}/tasks`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                name:
+                                    data.name,
+
+                                owner:
+                                    data.owner || null,
+
+                                status:
+                                    data.status,
+
+                                priority:
+                                    data.priority,
+
+                                start:
+                                    data.start || null,
+
+                                end:
+                                    data.end || null,
+
+                                description:
+                                    data.description || null,
+
+                                progress:
+                                    data.progress
+
+                            })
+
+                    }
+                )
 
 
-            project.tasks.push(
+            if (!response.ok) {
 
-                data
+                throw new Error(
+                    `Failed to create task: ${response.status}`
+                )
 
-            )
+            }
+
+
+            const createdTask =
+                await response.json()
+
+
+            const checklistSuccess =
+                await syncChecklist(
+                    createdTask.id,
+                    data.checklist
+                )
+
+
+            if (!checklistSuccess) {
+
+                window.alert(
+                    "任務已建立，但子任務同步失敗"
+                )
+
+                return false
+
+            }
+
+
+            const refreshedResponse =
+                await fetch(
+                    `${API_BASE}/tasks/${createdTask.id}`
+                )
+
+
+            if (!refreshedResponse.ok) {
+
+                throw new Error(
+                    `Failed to reload created task: ${refreshedResponse.status}`
+                )
+
+            }
+
+
+            const refreshedTask =
+                await refreshedResponse.json()
+
+
+            const normalized =
+                normalizeTask(
+                    refreshedTask
+                )
+
+
+            if (
+                !Array.isArray(
+                    project.tasks
+                )
+            ) {
+
+                project.tasks = []
+
+            }
+
+
+            const exists =
+                project.tasks.some(
+
+                    item =>
+                        Number(item.id) ===
+                        Number(normalized.id)
+
+                )
+
+
+            if (!exists) {
+
+                project.tasks.push(
+                    normalized
+                )
+
+            }
+
+
+            editingTask.value =
+                null
+
+
+            return normalized
 
         }
+        catch (error) {
 
+            console.error(
+                "Failed to create task:",
+                error
+            )
 
-        editingTask.value =
-            null
+            window.alert(
+                "建立任務失敗"
+            )
 
+            return false
 
-        return data
+        }
 
     }
 
@@ -436,7 +1692,7 @@ export function useTasks() {
     |--------------------------------------------------------------------------
     */
 
-    function deleteTask(
+    async function deleteTask(
         task,
         project
     ) {
@@ -451,22 +1707,9 @@ export function useTasks() {
         }
 
 
-        if (
-            !Array.isArray(
-                project.tasks
-            )
-        ) {
-
-            return false
-
-        }
-
-
         const confirmed =
             window.confirm(
-
                 `確定要刪除「${task.name}」嗎？`
-
             )
 
 
@@ -477,16 +1720,61 @@ export function useTasks() {
         }
 
 
-        project.tasks =
-            project.tasks.filter(
+        try {
 
-                item =>
-                    item.id !== task.id
+            const response =
+                await fetch(
+                    `${API_BASE}/tasks/${task.id}`,
+                    {
+                        method: "DELETE"
+                    }
+                )
 
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `Failed to delete task: ${response.status}`
+                )
+
+            }
+
+
+            if (
+                Array.isArray(
+                    project.tasks
+                )
+            ) {
+
+                project.tasks =
+                    project.tasks.filter(
+
+                        item =>
+                            Number(item.id) !==
+                            Number(task.id)
+
+                    )
+
+            }
+
+
+            return true
+
+        }
+        catch (error) {
+
+            console.error(
+                "Failed to delete task:",
+                error
             )
 
+            window.alert(
+                "刪除任務失敗"
+            )
 
-        return true
+            return false
+
+        }
 
     }
 
@@ -495,12 +1783,9 @@ export function useTasks() {
     |--------------------------------------------------------------------------
     | Move Task
     |--------------------------------------------------------------------------
-    |
-    | Used by Kanban drag & drop.
-    |
     */
 
-    function moveTask(
+    async function moveTask(
         task,
         status,
         project
@@ -537,7 +1822,8 @@ export function useTasks() {
             project.tasks.find(
 
                 item =>
-                    item.id === task.id
+                    Number(item.id) ===
+                    Number(task.id)
 
             )
 
@@ -549,11 +1835,69 @@ export function useTasks() {
         }
 
 
-        target.status =
-            normalizedStatus
+        try {
+
+            const response =
+                await fetch(
+                    `${API_BASE}/tasks/${task.id}`,
+                    {
+                        method: "PUT",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                status:
+                                    normalizedStatus
+
+                            })
+
+                    }
+                )
 
 
-        return true
+            if (!response.ok) {
+
+                throw new Error(
+                    `Failed to move task: ${response.status}`
+                )
+
+            }
+
+
+            const updatedTask =
+                await response.json()
+
+
+            const normalized =
+                normalizeTask(
+                    updatedTask
+                )
+
+
+            Object.assign(
+                target,
+                normalized
+            )
+
+
+            return true
+
+        }
+        catch (error) {
+
+            console.error(
+                "Failed to move task:",
+                error
+            )
+
+            return false
+
+        }
 
     }
 
@@ -564,7 +1908,7 @@ export function useTasks() {
     |--------------------------------------------------------------------------
     */
 
-    function toggleChecklist(
+    async function toggleChecklist(
         task,
         item
     ) {
@@ -579,45 +1923,103 @@ export function useTasks() {
         }
 
 
-        item.completed =
-            !item.completed
+        try {
 
+            const response =
+                await fetch(
+                    `${API_BASE}/tasks/${task.id}/checklist/${item.id}`,
+                    {
+                        method: "PUT",
 
-        /*
-         * Automatically update progress
-         * when checklist exists.
-         */
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
 
-        if (
-            Array.isArray(
-                task.checklist
-            ) &&
-            task.checklist.length > 0
-        ) {
+                        body:
+                            JSON.stringify({
 
-            const completed =
-                task.checklist.filter(
+                                text:
+                                    item.text,
 
-                    checklistItem =>
-                        checklistItem.completed
+                                completed:
+                                    !item.completed
 
-                ).length
+                            })
 
-
-            task.progress =
-                Math.round(
-
-                    (
-                        completed /
-                        task.checklist.length
-                    ) * 100
-
+                    }
                 )
 
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `Failed to update checklist: ${response.status}`
+                )
+
+            }
+
+
+            const updatedItem =
+                await response.json()
+
+
+            item.completed =
+                updatedItem.completed
+
+
+            if (
+                Array.isArray(
+                    task.checklist
+                ) &&
+                task.checklist.length > 0
+            ) {
+
+                const completed =
+                    task.checklist.filter(
+
+                        checklistItem =>
+                            checklistItem.completed
+
+                    ).length
+
+
+                const progress =
+                    Math.round(
+
+                        (
+                            completed /
+                            task.checklist.length
+                        ) * 100
+
+                    )
+
+
+                task.progress =
+                    progress
+
+
+                await updateProgress(
+                    task,
+                    progress
+                )
+
+            }
+
+
+            return true
+
         }
+        catch (error) {
 
+            console.error(
+                "Failed to toggle checklist:",
+                error
+            )
 
-        return true
+            return false
+
+        }
 
     }
 
@@ -628,7 +2030,7 @@ export function useTasks() {
     |--------------------------------------------------------------------------
     */
 
-    function addChecklistItem(
+    async function addChecklistItem(
         task,
         text = ""
     ) {
@@ -640,34 +2042,87 @@ export function useTasks() {
         }
 
 
-        if (
-            !Array.isArray(
-                task.checklist
-            )
-        ) {
+        const value =
+            text.trim()
 
-            task.checklist = []
+
+        if (!value) {
+
+            return false
 
         }
 
 
-        task.checklist.push({
+        try {
 
-            id:
-                `check-${Date.now()}-${Math.random()
-                    .toString(36)
-                    .slice(2, 8)}`,
+            const response =
+                await fetch(
+                    `${API_BASE}/tasks/${task.id}/checklist`,
+                    {
+                        method: "POST",
 
-            text:
-                text.trim(),
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
 
-            completed:
-                false
+                        body:
+                            JSON.stringify({
 
-        })
+                                text:
+                                    value,
+
+                                completed:
+                                    false
+
+                            })
+
+                        }
+                    )
 
 
-        return true
+            if (!response.ok) {
+
+                throw new Error(
+                    `Failed to add checklist: ${response.status}`
+                )
+
+            }
+
+
+            const item =
+                await response.json()
+
+
+            if (
+                !Array.isArray(
+                    task.checklist
+                )
+            ) {
+
+                task.checklist = []
+
+            }
+
+
+            task.checklist.push(
+                item
+            )
+
+
+            return true
+
+        }
+        catch (error) {
+
+            console.error(
+                "Failed to add checklist:",
+                error
+            )
+
+            return false
+
+        }
 
     }
 
@@ -678,7 +2133,7 @@ export function useTasks() {
     |--------------------------------------------------------------------------
     */
 
-    function removeChecklistItem(
+    async function removeChecklistItem(
         task,
         index
     ) {
@@ -705,16 +2160,49 @@ export function useTasks() {
         }
 
 
-        task.checklist.splice(
-
-            index,
-
-            1
-
-        )
+        const item =
+            task.checklist[index]
 
 
-        return true
+        try {
+
+            const response =
+                await fetch(
+                    `${API_BASE}/tasks/${task.id}/checklist/${item.id}`,
+                    {
+                        method: "DELETE"
+                    }
+                )
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `Failed to delete checklist: ${response.status}`
+                )
+
+            }
+
+
+            task.checklist.splice(
+                index,
+                1
+            )
+
+
+            return true
+
+        }
+        catch (error) {
+
+            console.error(
+                "Failed to delete checklist:",
+                error
+            )
+
+            return false
+
+        }
 
     }
 
@@ -725,7 +2213,7 @@ export function useTasks() {
     |--------------------------------------------------------------------------
     */
 
-    function updateProgress(
+    async function updateProgress(
         task,
         progress
     ) {
@@ -737,7 +2225,7 @@ export function useTasks() {
         }
 
 
-        task.progress =
+        const value =
             Math.min(
 
                 100,
@@ -753,7 +2241,57 @@ export function useTasks() {
             )
 
 
-        return true
+        try {
+
+            const response =
+                await fetch(
+                    `${API_BASE}/tasks/${task.id}`,
+                    {
+                        method: "PUT",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                progress:
+                                    value
+
+                            })
+
+                    }
+                )
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `Failed to update progress: ${response.status}`
+                )
+
+            }
+
+
+            task.progress =
+                value
+
+
+            return true
+
+        }
+        catch (error) {
+
+            console.error(
+                "Failed to update progress:",
+                error
+            )
+
+            return false
+
+        }
 
     }
 
@@ -803,11 +2341,6 @@ export function useTasks() {
 
             progress:
                 0,
-
-            /*
-             * Checklist is copied, but every
-             * item starts unchecked.
-             */
 
             checklist:
                 Array.isArray(
@@ -885,6 +2418,14 @@ export function useTasks() {
     return {
 
         editingTask,
+
+        websocketConnected,
+
+        loadTasks,
+
+        connectWebSocket,
+
+        disconnectWebSocket,
 
         createTask,
 

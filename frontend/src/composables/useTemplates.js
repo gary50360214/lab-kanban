@@ -5,72 +5,32 @@ import {
 
 /*
 |--------------------------------------------------------------------------
-| Default Templates
+| API
 |--------------------------------------------------------------------------
-|
-| Keep the initial data small and predictable.
-| Templates can be created, edited and deleted later.
-|
 */
 
-const DEFAULT_TEMPLATES = [
+const API_BASE =
+    "/api/templates"
 
-    {
-        id: 1,
 
-        name: "Server Firmware Update",
+/*
+|--------------------------------------------------------------------------
+| WebSocket
+|--------------------------------------------------------------------------
+*/
 
-        owner: "",
+function getWebSocketUrl() {
 
-        status: "todo",
+    const protocol =
+        window.location.protocol === "https:"
+            ? "wss:"
+            : "ws:"
 
-        priority: "不緊急但重要",
 
-        start: "",
+    return `${protocol}//${window.location.host}/ws`
 
-        end: "",
+}
 
-        description:
-            "Update BIOS / BMC / NIC / GPU firmware and verify system status.",
-
-        
-
-        checklist: [
-
-            {
-                id: "default-fw-1",
-
-                text: "Confirm current firmware versions",
-
-                completed: false
-
-            },
-
-            {
-                id: "default-fw-2",
-
-                text: "Update firmware",
-
-                completed: false
-
-            },
-
-            {
-                id: "default-fw-3",
-
-                text: "Verify system status",
-
-                completed: false
-
-            }
-
-        ]
-
-    }
-
-]
-const STORAGE_KEY =
-    "nd2a33_templates"
 
 /*
 |--------------------------------------------------------------------------
@@ -81,87 +41,12 @@ const STORAGE_KEY =
 function clone(value) {
 
     return JSON.parse(
-
         JSON.stringify(value)
-
     )
 
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| Load Templates
-|--------------------------------------------------------------------------
-*/
-
-function loadTemplates(
-    fallback = DEFAULT_TEMPLATES
-) {
-
-    const raw =
-        localStorage.getItem(
-            STORAGE_KEY
-        )
-
-
-    if (!raw) {
-
-        return clone(fallback)
-
-    }
-
-
-    try {
-
-        const data =
-            JSON.parse(raw)
-
-
-        if (!Array.isArray(data)) {
-
-            return clone(fallback)
-
-        }
-
-
-        return data
-
-    }
-    catch (error) {
-
-        console.error(
-            "Failed to load templates:",
-            error
-        )
-
-
-        return clone(fallback)
-
-    }
-
-}
-/*
-|--------------------------------------------------------------------------
-| Save Templates
-|--------------------------------------------------------------------------
-*/
-
-function saveTemplates(
-    templates
-) {
-
-    localStorage.setItem(
-
-        STORAGE_KEY,
-
-        JSON.stringify(
-            templates
-        )
-
-    )
-
-}
 /*
 |--------------------------------------------------------------------------
 | Normalize Status
@@ -177,9 +62,10 @@ function normalizeStatus(status) {
     }
 
 
-    const value = String(status)
-        .trim()
-        .toLowerCase()
+    const value =
+        String(status)
+            .trim()
+            .toLowerCase()
 
 
     const map = {
@@ -233,22 +119,65 @@ function normalizeStatus(status) {
 
 /*
 |--------------------------------------------------------------------------
-| Normalize Template
+| Normalize Checklist Item
+|--------------------------------------------------------------------------
+|
+| Template Checklist 只保存：
+|
+|     id
+|     text
+|
+| 不保存 completed。
+|
+| completed 是「實際 Task」的狀態，
+| 不屬於 Template。
+|
 |--------------------------------------------------------------------------
 */
 
-function normalizeTemplate(template = {}) {
+function normalizeChecklistItem(
+    item = {},
+    index = 0
+) {
 
     return {
 
         id:
-            template.id ?? null,
+            item.id ??
+            `check-${Date.now()}-${index}`,
+
+        text:
+            item.text ??
+            ""
+
+    }
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Normalize Template
+|--------------------------------------------------------------------------
+*/
+
+function normalizeTemplate(
+    template = {}
+) {
+
+    return {
+
+        id:
+            template.id ??
+            null,
 
         name:
-            template.name ?? "",
+            template.name ??
+            "",
 
         owner:
-            template.owner ?? "",
+            template.owner ??
+            "",
 
         status:
             normalizeStatus(
@@ -260,13 +189,23 @@ function normalizeTemplate(template = {}) {
             "不緊急也不重要",
 
         start:
-            template.start ?? "",
+            template.start ??
+            "",
 
         end:
-            template.end ?? "",
+            template.end ??
+            "",
 
         description:
-            template.description ?? "",
+            template.description ??
+            "",
+
+        /*
+         * Template Checklist
+         *
+         * 只有文字，
+         * 沒有 completed。
+         */
 
         checklist:
             Array.isArray(
@@ -274,23 +213,7 @@ function normalizeTemplate(template = {}) {
             )
 
                 ? template.checklist.map(
-
-                    (item, index) => ({
-
-                        id:
-                            item.id ??
-                            `check-${Date.now()}-${index}`,
-
-                        text:
-                            item.text ?? "",
-
-                        completed:
-                            Boolean(
-                                item.completed
-                            )
-
-                    })
-
+                    normalizeChecklistItem
                 )
 
                 : []
@@ -306,55 +229,675 @@ function normalizeTemplate(template = {}) {
 |--------------------------------------------------------------------------
 */
 
-export function useTemplates(
-    initialTemplates = DEFAULT_TEMPLATES
-) {
+export function useTemplates() {
 
-
-    const templates = ref(
-
-        loadTemplates(initialTemplates)
-        .map(normalizeTemplate)
-    )
+    const templates =
+        ref([])
 
 
     /*
     |--------------------------------------------------------------------------
-    | Create Template
+    | WebSocket State
     |--------------------------------------------------------------------------
     */
 
-    function createTemplate(template) {
-
-        const data =
-            normalizeTemplate(template)
+    const websocket =
+        ref(null)
 
 
-        data.id =
-            Date.now()
+    let reconnectTimer =
+        null
 
 
-        templates.value.push(
+    /*
+    |--------------------------------------------------------------------------
+    | Loading State
+    |--------------------------------------------------------------------------
+    */
 
-            data
+    const loading =
+        ref(false)
 
-        )
-saveTemplates(
-    templates.value
-)
 
-        return data
+    /*
+    |--------------------------------------------------------------------------
+    | WebSocket Message
+    |--------------------------------------------------------------------------
+    */
+
+    function handleWebSocketMessage(
+        message
+    ) {
+
+        if (!message) {
+
+            return
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Template Created
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            message.type ===
+            "template.created"
+        ) {
+
+            const template =
+                message.data
+
+
+            if (!template?.id) {
+
+                return
+
+            }
+
+
+            const normalized =
+                normalizeTemplate(
+                    template
+                )
+
+
+            const exists =
+                templates.value.some(
+
+                    item =>
+                        Number(item.id) ===
+                        Number(normalized.id)
+
+                )
+
+
+            /*
+             * POST 已經在目前 client
+             * 加入過的話，不要重複加入。
+             */
+
+            if (exists) {
+
+                return
+
+            }
+
+
+            templates.value.push(
+                normalized
+            )
+
+
+            templates.value.sort(
+
+                (a, b) =>
+                    Number(a.id) -
+                    Number(b.id)
+
+            )
+
+
+            return
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Template Updated
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            message.type ===
+            "template.updated"
+        ) {
+
+            const template =
+                message.data
+
+
+            if (!template?.id) {
+
+                return
+
+            }
+
+
+            const normalized =
+                normalizeTemplate(
+                    template
+                )
+
+
+            const index =
+                templates.value.findIndex(
+
+                    item =>
+                        Number(item.id) ===
+                        Number(normalized.id)
+
+                )
+
+
+            if (index === -1) {
+
+                templates.value.push(
+                    normalized
+                )
+
+            }
+            else {
+
+                templates.value[index] =
+                    normalized
+
+            }
+
+
+            templates.value.sort(
+
+                (a, b) =>
+                    Number(a.id) -
+                    Number(b.id)
+
+            )
+
+
+            return
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Template Deleted
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            message.type ===
+            "template.deleted"
+        ) {
+
+            const templateId =
+                Number(
+                    message.data?.id
+                )
+
+
+            if (!templateId) {
+
+                return
+
+            }
+
+
+            templates.value =
+                templates.value.filter(
+
+                    template =>
+                        Number(template.id) !==
+                        templateId
+
+                )
+
+
+            return
+
+        }
 
     }
 
 
     /*
     |--------------------------------------------------------------------------
+    | Connect WebSocket
+    |--------------------------------------------------------------------------
+    */
+
+    function connectWebSocket() {
+
+        disconnectWebSocket()
+
+
+        const url =
+            getWebSocketUrl()
+
+
+        console.log(
+            "[Template WebSocket] Connecting:",
+            url
+        )
+
+
+        const socket =
+            new WebSocket(url)
+
+
+        websocket.value =
+            socket
+
+
+        socket.onopen = () => {
+
+            console.log(
+                "[Template WebSocket] Connected"
+            )
+
+        }
+
+
+        socket.onmessage =
+            event => {
+
+                try {
+
+                    const message =
+                        JSON.parse(
+                            event.data
+                        )
+
+
+                    console.log(
+                        "[Template WebSocket] Message:",
+                        message
+                    )
+
+
+                    handleWebSocketMessage(
+                        message
+                    )
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "[Template WebSocket] Invalid message:",
+                        error
+                    )
+
+                }
+
+            }
+
+
+        socket.onerror =
+            error => {
+
+                console.error(
+                    "[Template WebSocket] Error:",
+                    error
+                )
+
+            }
+
+
+        socket.onclose =
+            () => {
+
+                websocket.value =
+                    null
+
+
+                console.log(
+                    "[Template WebSocket] Disconnected"
+                )
+
+
+                clearTimeout(
+                    reconnectTimer
+                )
+
+
+                reconnectTimer =
+                    setTimeout(
+
+                        () => {
+
+                            connectWebSocket()
+
+                        },
+
+                        3000
+
+                    )
+
+            }
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Disconnect WebSocket
+    |--------------------------------------------------------------------------
+    */
+
+    function disconnectWebSocket() {
+
+        clearTimeout(
+            reconnectTimer
+        )
+
+
+        reconnectTimer =
+            null
+
+
+        if (
+            websocket.value
+        ) {
+
+            try {
+
+                websocket.value.onclose =
+                    null
+
+
+                websocket.value.close()
+
+            }
+            catch (error) {
+
+                console.error(
+                    "[Template WebSocket] Close error:",
+                    error
+                )
+
+            }
+
+        }
+
+
+        websocket.value =
+            null
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Load Templates
+    |--------------------------------------------------------------------------
+    */
+
+    async function loadTemplates() {
+
+        loading.value =
+            true
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_BASE
+                )
+
+
+            if (!response.ok) {
+
+                throw new Error(
+
+                    `Failed to load templates: ${response.status}`
+
+                )
+
+            }
+
+
+            const data =
+                await response.json()
+
+
+            templates.value =
+                Array.isArray(data)
+
+                    ? data.map(
+                        normalizeTemplate
+                    )
+
+                    : []
+
+
+            templates.value.sort(
+
+                (a, b) =>
+                    Number(a.id) -
+                    Number(b.id)
+
+            )
+
+
+            return templates.value
+
+        }
+        catch (error) {
+
+            console.error(
+                "Failed to load templates:",
+                error
+            )
+
+
+            throw error
+
+        }
+        finally {
+
+            loading.value =
+                false
+
+        }
+
+    }
+
+
+/*
+|--------------------------------------------------------------------------
+| Create Template
+|--------------------------------------------------------------------------
+*/
+
+async function createTemplate(
+    template
+) {
+
+    const data =
+        normalizeTemplate(
+            template
+        )
+
+
+    /*
+     * 不把 local id 傳給後端。
+     */
+
+    delete data.id
+
+
+    /*
+     * 空日期不能傳 ""
+     *
+     * FastAPI:
+     *
+     *     date | None
+     *
+     * 接受：
+     *
+     *     "2026-08-18"
+     *     null
+     *
+     * 不接受：
+     *
+     *     ""
+     */
+
+    data.start =
+        data.start || null
+
+    data.end =
+        data.end || null
+
+
+    /*
+     * Template Checklist
+     *
+     * Template 只保存：
+     *
+     *     text
+     *
+     * 不保存 completed。
+     */
+
+    data.checklist =
+        data.checklist.map(
+
+            item => ({
+
+                text:
+                    item.text
+
+            })
+
+        )
+
+
+    /*
+     * POST
+     */
+
+    const response =
+        await fetch(
+
+            API_BASE,
+
+            {
+                method:
+                    "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body:
+                    JSON.stringify(data)
+
+            }
+
+        )
+
+
+    if (!response.ok) {
+
+        const errorText =
+            await response.text()
+
+
+        throw new Error(
+
+            `Failed to create template: ${response.status} ${errorText}`
+
+        )
+
+    }
+
+
+    /*
+     * Backend 回傳真正建立完成的 Template。
+     */
+
+    const createdTemplate =
+        normalizeTemplate(
+
+            await response.json()
+
+        )
+
+
+    /*
+     * 立即更新目前 client。
+     *
+     * WebSocket 也會收到 template.created。
+     *
+     * 所以這裡必須避免重複。
+     */
+
+    const exists =
+        templates.value.some(
+
+            item =>
+                Number(item.id) ===
+                Number(createdTemplate.id)
+
+        )
+
+
+    if (!exists) {
+
+        templates.value.push(
+            createdTemplate
+        )
+
+    }
+    else {
+
+        const index =
+            templates.value.findIndex(
+
+                item =>
+                    Number(item.id) ===
+                    Number(createdTemplate.id)
+
+            )
+
+
+        if (index !== -1) {
+
+            templates.value[index] =
+                createdTemplate
+
+        }
+
+    }
+
+
+    /*
+     * 保持 ID 排序。
+     */
+
+    templates.value.sort(
+
+        (a, b) =>
+            Number(a.id) -
+            Number(b.id)
+
+    )
+
+
+    return clone(
+        createdTemplate
+    )
+
+}
+
+    
+    /*
+    |--------------------------------------------------------------------------
     | Update Template
     |--------------------------------------------------------------------------
     */
 
-    function updateTemplate(template) {
+    async function updateTemplate(
+        template
+    ) {
 
         if (!template?.id) {
 
@@ -363,37 +906,147 @@ saveTemplates(
         }
 
 
-        const index =
-            templates.value.findIndex(
+        const data =
+            normalizeTemplate(
+                template
+            )
 
-                item =>
-                    item.id === template.id
+
+        const templateId =
+            data.id
+
+
+        /*
+         * Template Checklist
+         *
+         * 不傳 completed。
+         */
+
+        const checklist =
+            data.checklist.map(
+
+                item => ({
+
+                    text:
+                        item.text
+
+                })
 
             )
 
 
-        if (index === -1) {
+        const response =
+            await fetch(
 
-            return false
+                `${API_BASE}/${templateId}`,
+
+                {
+                    method:
+                        "PUT",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            name:
+                                data.name,
+
+                            owner:
+                                data.owner,
+
+                            status:
+                                data.status,
+
+                            priority:
+                                data.priority,
+
+                            start:
+                                data.start ||
+                                null,
+
+                            end:
+                                data.end ||
+                                null,
+
+                            description:
+                                data.description,
+
+                            checklist:
+                                checklist
+
+                        })
+
+                }
+
+            )
+
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text()
+
+
+            throw new Error(
+
+                `Failed to update template: ${response.status} ${errorText}`
+
+            )
 
         }
 
 
-        const data =
-            normalizeTemplate(template)
+        const updatedTemplate =
+            normalizeTemplate(
+
+                await response.json()
+
+            )
 
 
-        data.id =
-            template.id
+        const index =
+            templates.value.findIndex(
+
+                item =>
+                    Number(item.id) ===
+                    Number(updatedTemplate.id)
+
+            )
 
 
-        templates.value[index] =
-            data
-saveTemplates(
-    templates.value
-)
+        if (index !== -1) {
 
-        return data
+            templates.value[index] =
+                updatedTemplate
+
+        }
+        else {
+
+            templates.value.push(
+                updatedTemplate
+            )
+
+        }
+
+
+        templates.value.sort(
+
+            (a, b) =>
+                Number(a.id) -
+                Number(b.id)
+
+        )
+
+
+        return clone(
+            updatedTemplate
+        )
 
     }
 
@@ -404,7 +1057,9 @@ saveTemplates(
     |--------------------------------------------------------------------------
     */
 
-    function deleteTemplate(template) {
+    async function deleteTemplate(
+        template
+    ) {
 
         const id =
             typeof template === "object"
@@ -421,32 +1076,48 @@ saveTemplates(
         }
 
 
-        const index =
-            templates.value.findIndex(
+        const templateId =
+            Number(id)
 
-                item =>
-                    item.id === id
+
+        const response =
+            await fetch(
+
+                `${API_BASE}/${templateId}`,
+
+                {
+                    method:
+                        "DELETE"
+
+                }
 
             )
 
 
-        if (index === -1) {
+        if (!response.ok) {
 
-            return false
+            const errorText =
+                await response.text()
+
+
+            throw new Error(
+
+                `Failed to delete template: ${response.status} ${errorText}`
+
+            )
 
         }
 
 
-        templates.value.splice(
+        templates.value =
+            templates.value.filter(
 
-            index,
+                item =>
+                    Number(item.id) !==
+                    templateId
 
-            1
+            )
 
-        )
-saveTemplates(
-    templates.value
-)
 
         return true
 
@@ -459,13 +1130,16 @@ saveTemplates(
     |--------------------------------------------------------------------------
     */
 
-    function getTemplate(id) {
+    function getTemplate(
+        id
+    ) {
 
         const template =
             templates.value.find(
 
                 item =>
-                    item.id === id
+                    Number(item.id) ===
+                    Number(id)
 
             )
 
@@ -477,7 +1151,9 @@ saveTemplates(
         }
 
 
-        return clone(template)
+        return clone(
+            template
+        )
 
     }
 
@@ -486,6 +1162,18 @@ saveTemplates(
     |--------------------------------------------------------------------------
     | Create Task From Template
     |--------------------------------------------------------------------------
+    |
+    | Template：
+    |
+    |     Checklist = 定義
+    |
+    | Task：
+    |
+    |     Checklist = 實際執行狀態
+    |
+    | 因此從 Template 建立 Task 時，
+    | 所有 Checklist 一律從 false 開始。
+    |
     */
 
     function createTaskFromTemplate(
@@ -500,17 +1188,15 @@ saveTemplates(
 
 
         const data =
-            normalizeTemplate(template)
+            normalizeTemplate(
+                template
+            )
 
-
-        /*
-         * A template should NEVER reuse
-         * the template's checklist object.
-         */
 
         return {
 
-            id: null,
+            id:
+                null,
 
             name:
                 data.name,
@@ -533,6 +1219,16 @@ saveTemplates(
             description:
                 data.description,
 
+            progress:
+                0,
+
+            /*
+             * 建立真正 Task 時，
+             * Checklist 全部重新建立。
+             *
+             * 不使用 Template 的完成狀態。
+             */
+
             checklist:
                 data.checklist.map(
 
@@ -545,11 +1241,6 @@ saveTemplates(
 
                         text:
                             item.text,
-
-                        /*
-                         * New tasks start with
-                         * unchecked checklist items.
-                         */
 
                         completed:
                             false
@@ -573,23 +1264,32 @@ saveTemplates(
 
         return {
 
-            id: null,
+            id:
+                null,
 
-            name: "",
+            name:
+                "",
 
-            owner: "",
+            owner:
+                "",
 
-            status: "todo",
+            status:
+                "todo",
 
-            priority: "不緊急也不重要",
+            priority:
+                "不緊急也不重要",
 
-            start: "",
+            start:
+                "",
 
-            end: "",
+            end:
+                "",
 
-            description: "",
+            description:
+                "",
 
-            checklist: []
+            checklist:
+                []
 
         }
 
@@ -606,6 +1306,10 @@ saveTemplates(
 
         templates,
 
+        loading,
+
+        loadTemplates,
+
         createTemplate,
 
         updateTemplate,
@@ -616,7 +1320,13 @@ saveTemplates(
 
         createTaskFromTemplate,
 
-        createEmptyTemplate
+        createEmptyTemplate,
+
+        connectWebSocket,
+
+        disconnectWebSocket,
+
+        handleWebSocketMessage
 
     }
 

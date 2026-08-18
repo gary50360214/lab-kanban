@@ -286,84 +286,61 @@
                 <!-- =====================================
                      Checklist
                 ====================================== -->
+<div class="form-group">
 
-                <div class="form-group">
+    <div class="field-header">
 
-                    <div class="field-header">
+        <label>
+            子任務 Checklist
+        </label>
 
-                        <label>
+        <button
+            type="button"
+            class="btn btn-secondary btn-small"
+            @click="addChecklistItem"
+        >
+            ＋ 新增子任務
+        </button>
 
-                            子任務 Checklist
-
-                        </label>
-
-
-                        <button
-                            type="button"
-                            class="btn btn-secondary btn-small"
-                            @click="addChecklistItem"
-                        >
-
-                            ＋ 新增子任務
-
-                        </button>
-
-                    </div>
+    </div>
 
 
-                    <div class="checklist-editor">
+    <div class="template-checklist-editor">
+
+        <div
+            v-for="(item, index) in form.checklist"
+            :key="item.id || index"
+            class="template-checklist-item"
+        >
+
+            <input
+                v-model="item.text"
+                type="text"
+                placeholder="輸入子任務"
+            />
+
+            <button
+                type="button"
+                class="delete-button btn-small"
+                @click="removeChecklistItem(index)"
+                aria-label="Delete checklist item"
+            >
+                ×
+            </button>
+
+        </div>
 
 
-                        <div
-                            v-for="(item, index) in form.checklist"
-                            :key="item.id || index"
-                            class="checklist-editor-item"
-                        >
+        <div
+            v-if="form.checklist.length === 0"
+            class="checklist-empty"
+        >
+            尚未建立子任務
+        </div>
 
-                            <input
-                                v-model="item.completed"
-                                type="checkbox"
-                                :aria-label="`完成子任務 ${index + 1}`"
-                            />
-
-
-                            <input
-                                v-model="item.text"
-                                type="text"
-                                placeholder="輸入子任務"
-                            />
-
-
-                            <button
-                                type="button"
-                                class="delete-button btn-small"
-                                @click="removeChecklistItem(index)"
-                                aria-label="Delete checklist item"
-                            >
-
-                                ×
-
-                            </button>
-
-                        </div>
-
-
-                        <div
-                            v-if="form.checklist.length === 0"
-                            class="checklist-empty"
-                        >
-
-                            尚未建立子任務
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-            </div>
-
+    </div>
+</div>
+</div>
 
             <!-- =========================================
                  Footer
@@ -485,11 +462,7 @@ function cloneChecklist(list) {
                 `check-${Date.now()}-${index}`,
 
             text:
-                item.text ?? "",
-
-            completed:
-                Boolean(item.completed)
-
+                item.text ?? ""
         })
 
     )
@@ -630,11 +603,7 @@ function addChecklistItem() {
                 .slice(2, 8)}`,
 
         text:
-            "",
-
-        completed:
-            false
-
+            ""
     })
 
 }
@@ -690,8 +659,6 @@ function validate() {
     return true
 
 }
-
-
 /* ==============================================
    Save
 ============================================== */
@@ -740,12 +707,7 @@ function save() {
                         item.id,
 
                     text:
-                        item.text.trim(),
-
-                    completed:
-                        Boolean(
-                            item.completed
-                        )
+                        item.text.trim()
 
                 })
 

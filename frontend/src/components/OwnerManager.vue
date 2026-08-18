@@ -1,435 +1,436 @@
+```vue
 <template>
 
-<div>
+    <div>
+
+        <!-- Header -->
+
+        <div class="modal-header">
+
+            <h2>
+                管理負責人
+            </h2>
 
 
-    <!-- Header -->
-
-    <div class="modal-header">
-
-
-        <h2>
-
-            管理負責人
-
-        </h2>
-
-
-
-        <button
-
-            class="close-button"
-
-            @click="$emit('close')"
-
-        >
-
-            ✕
-
-
-        </button>
-
-
-    </div>
-
-
-
-
-
-
-
-
-
-    <!-- Body -->
-
-
-    <div class="modal-body">
-
-
-
-        <div class="member-list">
-
-
-
-            <div
-
-                v-for="owner in localOwners"
-
-                :key="owner"
-
-                class="member-item"
-
+            <button
+                class="close-button"
+                @click="close"
             >
+                ✕
+            </button>
+
+        </div>
 
 
+        <!-- Body -->
 
-                <span>
+        <div class="modal-body">
 
-                    {{ owner }}
+            <div class="member-list">
 
-                </span>
-
-
-
-
-
-                <button
-
-                    class="delete-button"
-
-                    @click="removeOwner(owner)"
-
+                <div
+                    v-for="owner in localOwners"
+                    :key="owner.id"
+                    class="member-item"
                 >
 
-                    刪除
+                    <span>
+                        {{ owner.name }}
+                    </span>
 
 
-                </button>
+                    <button
+                        class="delete-button"
+                        @click="removeOwner(owner)"
+                    >
+                        刪除
+                    </button>
 
-
+                </div>
 
             </div>
 
 
+            <div class="owner-add">
+
+                <input
+                    v-model="newOwner"
+                    placeholder="輸入新負責人"
+                    @keyup.enter="addOwner"
+                />
+
+
+                <button
+                    class="secondary-button"
+                    @click="addOwner"
+                >
+                    新增
+                </button>
+
+            </div>
 
         </div>
 
-
-
-
-
-
-
-
-
-        <div class="owner-add">
-
-
-            <input
-
-                v-model="newOwner"
-
-                placeholder="輸入新負責人"
-
-                @keyup.enter="addOwner"
-
-            />
-
-
-
-
-            <button
-
-                class="secondary-button"
-
-                @click="addOwner"
-
-            >
-
-                新增
-
-            </button>
-
-
-        </div>
-
-
-
-
     </div>
-
-
-
-
-
-
-
-
-
-    <!-- Footer -->
-
-
-    <div class="modal-buttons">
-
-
-
-        <button
-
-            class="cancel-button"
-
-            @click="close"
-
-        >
-
-            取消
-
-
-        </button>
-
-
-
-
-
-        <button
-
-            class="save-button"
-
-            @click="save"
-
-        >
-
-            儲存
-
-
-        </button>
-
-
-
-    </div>
-
-
-
-
-</div>
 
 </template>
 
 
-
-
-
-
-
-
-
 <script setup>
 
-
 import {
-
     ref,
-
-    watch
-
+    watch,
+    onMounted
 } from "vue"
 
 
-
-
-
-
-
+/* ==============================================
+   Props
+============================================== */
 
 const props = defineProps({
 
+    owners: {
 
+        type: Array,
 
-    owners:{
-
-
-        type:Array,
-
-
-        default:()=>[]
+        default: () => []
 
     }
-
-
 
 })
 
 
-
-
-
-
-
+/* ==============================================
+   Events
+============================================== */
 
 const emit = defineEmits([
 
-
-
     "update",
-
 
     "close"
 
-
-
 ])
 
 
+/* ==============================================
+   Local State
+============================================== */
+
+const localOwners =
+    ref([])
+
+const newOwner =
+    ref("")
 
 
+/* ==============================================
+   Load Owners
+============================================== */
+
+async function loadOwners() {
+
+    try {
+
+        const response =
+            await fetch("/api/owners")
 
 
+        if (!response.ok) {
+
+            throw new Error(
+                `Failed to load owners: ${response.status}`
+            )
+
+        }
 
 
-
-const localOwners = ref([
-
-    ...props.owners
-
-])
+        const owners =
+            await response.json()
 
 
+        localOwners.value =
+            Array.isArray(owners)
+                ? owners
+                : []
 
+    }
+    catch (error) {
 
-
-
-
-
-const newOwner = ref("")
-
-
-
-
-
-
-
-
-
-watch(
-
-    ()=>props.owners,
-
-    value=>{
-
-
-        localOwners.value=[
-
-            ...value
-
-        ]
-
+        console.error(
+            "Failed to load owners:",
+            error
+        )
 
     }
 
+}
+
+
+/* ==============================================
+   Add Owner
+============================================== */
+
+async function addOwner() {
+
+    const name =
+        newOwner.value.trim()
+
+
+    if (!name) {
+
+        return
+
+    }
+
+
+    const exists =
+        localOwners.value.some(
+            owner =>
+                owner.name === name
+        )
+
+
+    if (exists) {
+
+        window.alert(
+            "此負責人已存在"
+        )
+
+        return
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/owners",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            name
+                        })
+                }
+            )
+
+
+        if (!response.ok) {
+
+            const error =
+                await response.json()
+
+
+            throw new Error(
+                error.detail ||
+                `Failed to create owner: ${response.status}`
+            )
+
+        }
+
+
+        newOwner.value = ""
+
+
+        /*
+         * API is the source of truth.
+         * Reload instead of manually maintaining
+         * another copy of the owner list.
+         */
+        await loadOwners()
+
+
+        emit(
+            "update"
+        )
+
+    }
+    catch (error) {
+
+        console.error(
+            "Failed to create owner:",
+            error
+        )
+
+
+        window.alert(
+            error.message ||
+            "新增負責人失敗"
+        )
+
+    }
+
+}
+
+
+/* ==============================================
+   Remove Owner
+============================================== */
+
+async function removeOwner(owner) {
+
+    if (!owner?.id) {
+
+        return
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/owners/${owner.id}`,
+                {
+                    method: "DELETE"
+                }
+            )
+
+
+        if (!response.ok) {
+
+            const error =
+                await response.json()
+
+
+            throw new Error(
+                error.detail ||
+                `Failed to delete owner: ${response.status}`
+            )
+
+        }
+
+
+        /*
+         * Reload from API.
+         */
+        await loadOwners()
+
+
+        /*
+         * Tell parent that the owner list
+         * has changed.
+         */
+        emit(
+            "update"
+        )
+
+    }
+    catch (error) {
+
+        console.error(
+            "Failed to delete owner:",
+            error
+        )
+
+
+        window.alert(
+            error.message ||
+            "刪除負責人失敗"
+        )
+
+    }
+
+}
+
+
+/* ==============================================
+   Save
+============================================== */
+
+/*
+ * Owner creation/deletion is already persisted
+ * immediately through the API.
+ *
+ * Save therefore only means:
+ * "finish editing this modal".
+ */
+function save() {
+
+    emit(
+        "update"
+    )
+
+    close()
+
+}
+
+
+/* ==============================================
+   Close
+============================================== */
+
+function close() {
+
+    emit(
+        "close"
+    )
+
+}
+
+
+/* ==============================================
+   Parent Owner Sync
+============================================== */
+
+watch(
+
+    () => props.owners,
+
+    value => {
+
+        if (!Array.isArray(value)) {
+
+            localOwners.value = []
+
+            return
+
+        }
+
+
+        /*
+         * Parent receives API owner objects.
+         *
+         * Clone them so OwnerManager does not
+         * directly mutate parent's state.
+         */
+        localOwners.value =
+            value.map(
+                owner => ({
+                    id: owner.id,
+                    name: owner.name
+                })
+            )
+
+    },
+
+    {
+        immediate: true,
+        deep: true
+    }
 
 )
 
 
+/* ==============================================
+   Mounted
+============================================== */
 
+onMounted(() => {
 
+    loadOwners()
 
-
-
-
-
-function addOwner(){
-
-
-
-    const name = newOwner.value.trim()
-
-
-
-    if(!name){
-
-
-        return
-
-
-    }
-
-
-
-
-
-
-    if(localOwners.value.includes(name)){
-
-
-        return
-
-
-    }
-
-
-
-
-
-
-    localOwners.value.push(name)
-
-
-
-    newOwner.value=""
-
-
-
-}
-
-
-
-
-
-
-
-
-
-function removeOwner(owner){
-
-
-
-    localOwners.value = localOwners.value.filter(
-
-
-        item=>item!==owner
-
-
-    )
-
-
-}
-
-
-
-
-
-
-
-
-
-function save(){
-
-
-
-    emit(
-
-        "update",
-
-        localOwners.value
-
-    )
-
-
-
-    close()
-
-
-}
-
-
-
-
-
-
-
-
-
-function close(){
-
-
-    emit(
-
-        "close"
-
-    )
-
-
-}
-
-
+})
 
 </script>
+```

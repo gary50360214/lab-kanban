@@ -1,0 +1,393 @@
+import {
+    ref
+} from "vue"
+
+
+export function useProjects() {
+
+
+    const projects =
+        ref([])
+
+
+    const selectedProject =
+        ref(null)
+
+
+    const loading =
+        ref(false)
+
+
+    const error =
+        ref(null)
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Load Projects
+    |--------------------------------------------------------------------------
+    */
+
+    async function loadProjects() {
+
+        loading.value = true
+
+        error.value = null
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/projects"
+                )
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `Failed to load projects: ${response.status}`
+                )
+
+            }
+
+
+            const data =
+                await response.json()
+
+
+            projects.value =
+                data
+
+
+            /*
+             * Keep the current project
+             * if it still exists.
+             */
+
+            if (
+                selectedProject.value
+            ) {
+
+                const current =
+                    projects.value.find(
+
+                        project =>
+                            project.id ===
+                            selectedProject.value.id
+
+                    )
+
+
+                selectedProject.value =
+                    current ||
+                    projects.value[0] ||
+                    null
+
+            }
+            else {
+
+                selectedProject.value =
+                    projects.value[0] ||
+                    null
+
+            }
+
+        }
+        catch (err) {
+
+            console.error(
+                "Failed to load projects:",
+                err
+            )
+
+
+            error.value =
+                err.message
+
+        }
+        finally {
+
+            loading.value = false
+
+        }
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Select Project
+    |--------------------------------------------------------------------------
+    */
+
+    function selectProject(
+        project
+    ) {
+
+        selectedProject.value =
+            project
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create Project
+    |--------------------------------------------------------------------------
+    */
+
+    async function createProject(
+        project
+    ) {
+
+        const response =
+            await fetch(
+                "/api/projects",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            name:
+                                project.name
+                        })
+
+                }
+            )
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Failed to create project: ${response.status}`
+            )
+
+        }
+
+
+        const newProject =
+            await response.json()
+
+
+        projects.value.push(
+            newProject
+        )
+
+
+        selectedProject.value =
+            newProject
+
+
+        return newProject
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Project
+    |--------------------------------------------------------------------------
+    */
+
+    async function updateProject(
+        project
+    ) {
+
+        const response =
+            await fetch(
+                `/api/projects/${project.id}`,
+                {
+
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            name:
+                                project.name
+                        })
+
+                }
+            )
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Failed to update project: ${response.status}`
+            )
+
+        }
+
+
+        const updatedProject =
+            await response.json()
+
+
+        const index =
+            projects.value.findIndex(
+
+                item =>
+                    item.id ===
+                    updatedProject.id
+
+            )
+
+
+        if (index !== -1) {
+
+            projects.value[index] =
+                updatedProject
+
+        }
+
+
+        if (
+            selectedProject.value?.id ===
+            updatedProject.id
+        ) {
+
+            selectedProject.value =
+                updatedProject
+
+        }
+
+
+        return updatedProject
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delete Project
+    |--------------------------------------------------------------------------
+    */
+
+    async function deleteProject(
+        project
+    ) {
+
+        const confirmed =
+            window.confirm(
+                `確定刪除 ${project.name}?`
+            )
+
+
+        if (!confirmed) {
+
+            return false
+
+        }
+
+
+        const response =
+            await fetch(
+                `/api/projects/${project.id}`,
+                {
+
+                    method: "DELETE"
+
+                }
+            )
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Failed to delete project: ${response.status}`
+            )
+
+        }
+
+
+        projects.value =
+            projects.value.filter(
+
+                item =>
+                    item.id !==
+                    project.id
+
+            )
+
+
+        if (
+            selectedProject.value?.id ===
+            project.id
+        ) {
+
+            selectedProject.value =
+                projects.value[0] ||
+                null
+
+        }
+
+
+        return true
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Empty Project
+    |--------------------------------------------------------------------------
+    */
+
+    function createEmptyProject() {
+
+        return {
+
+            id: null,
+
+            name: "",
+
+            tasks: []
+
+        }
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Public API
+    |--------------------------------------------------------------------------
+    */
+
+    return {
+
+        projects,
+
+        selectedProject,
+
+        loading,
+
+        error,
+
+        loadProjects,
+
+        selectProject,
+
+        createProject,
+
+        updateProject,
+
+        deleteProject,
+
+        createEmptyProject
+
+    }
+
+}

@@ -1,188 +1,174 @@
+```vue
 <template>
 
-<section
-    v-if="project"
-    class="workspace"
->
+    <section
+        v-if="project"
+        class="workspace"
+    >
 
-    <!-- =========================================
-         Project Header
-    ========================================== -->
+        <!-- =========================================
+             Project Header
+        ========================================== -->
 
-    <header class="project-top">
+        <header class="project-top">
 
-        <div>
+            <div>
 
-            <h2>
+                <h2>
+                    {{ project.name }}
+                </h2>
 
-                {{ project.name }}
+                <p>
+                    Lab Task Management
+                </p>
 
-            </h2>
+            </div>
 
-            <p>
-
-                Lab Task Management
-
-            </p>
-
-        </div>
-
-    </header>
+        </header>
 
 
-    <!-- =========================================
-         Workspace Toolbar
-    ========================================== -->
+        <!-- =========================================
+             Workspace Toolbar
+        ========================================== -->
 
-    <section class="project-action-bar">
+        <section class="project-action-bar">
 
-        <!-- =====================================
-             Owner Filter
-        ====================================== -->
+            <!-- Owner Filter -->
 
-        <div
-            class="owner-filter"
-            aria-label="Filter tasks by owner"
-        >
-
-            <button
-                type="button"
-                class="owner-chip"
-                :class="{
-                    active:
-                        selectedOwner === 'ALL'
-                }"
-                @click="selectedOwner = 'ALL'"
+            <div
+                class="owner-filter"
+                aria-label="Filter tasks by owner"
             >
 
-                ALL
-
-            </button>
-
-
-            <button
-                v-for="owner in owners"
-                :key="owner"
-                type="button"
-                class="owner-chip"
-                :class="{
-                    active:
-                        selectedOwner === owner
-                }"
-                @click="selectedOwner = owner"
-            >
-
-                {{ owner }}
-
-            </button>
-
-        </div>
+                <button
+                    type="button"
+                    class="owner-chip"
+                    :class="{
+                        active:
+                            selectedOwner === 'ALL'
+                    }"
+                    @click="selectedOwner = 'ALL'"
+                >
+                    ALL
+                </button>
 
 
-        <!-- =====================================
-             Workspace Actions
-        ====================================== -->
+                <button
+                    v-for="owner in owners"
+                    :key="owner"
+                    type="button"
+                    class="owner-chip"
+                    :class="{
+                        active:
+                            selectedOwner === owner
+                    }"
+                    @click="selectedOwner = owner"
+                >
+                    {{ owner }}
+                </button>
 
-        <div class="project-actions">
-
-            <button
-                type="button"
-                class="btn btn-secondary"
-                @click="$emit('open-owner')"
-            >
-
-                Members
-
-            </button>
-
-
-            <button
-                type="button"
-                class="btn btn-secondary"
-                @click="$emit('open-template')"
-            >
-
-                Templates
-
-            </button>
+            </div>
 
 
-            <button
-                type="button"
-                class="btn btn-primary"
-                @click="$emit('create-task')"
-            >
+            <!-- Workspace Actions -->
 
-                ＋ New Task
+            <div class="project-actions">
 
-            </button>
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    @click="$emit('open-owner')"
+                >
+                    Members
+                </button>
 
-        </div>
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    @click="$emit('open-template')"
+                >
+                    Templates
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    @click="$emit('create-task')"
+                >
+                    ＋ New Task
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             Kanban
+        ========================================== -->
+
+        <main class="kanban-wrapper">
+
+            <KanbanBoard
+                :project="project"
+                :filter-owner="selectedOwner"
+
+                @detail="handleDetailTask"
+                @edit="handleEditTask"
+                @delete="$emit('delete-task', $event)"
+                @checklist-update="handleChecklistUpdate"
+                @move-task="handleMoveTask"
+            />
+
+        </main>
+
+
+        <!-- =========================================
+             Local Task Sidebar
+        ========================================== -->
+
+        <Transition name="task-sidebar">
+
+            <TaskEditSidebar
+                v-if="editingTask"
+
+                :task="editingTask"
+                :owners="owners"
+
+                @save="handleTaskSave"
+                @close="closeTaskSidebar"
+            />
+
+        </Transition>
 
     </section>
 
 
-    <!-- =========================================
-         Kanban
-    ========================================== -->
+    <!-- =============================================
+         No Project
+    ============================================= -->
 
-    <main class="kanban-wrapper">
+    <section
+        v-else
+        class="workspace workspace-empty"
+    >
 
-        <KanbanBoard
-    :project="project"
-    :filter-owner="selectedOwner"
+        <div class="workspace-empty-content">
 
-    @detail="handleDetailTask"
+            <h2>
+                No Project Selected
+            </h2>
 
-    @edit="handleEditTask"
+            <p>
+                Create or select a Project to start
+                managing tasks.
+            </p>
 
-    @delete="$emit('delete-task', $event)"
+        </div>
 
-    @checklist-update="handleChecklistUpdate"
-        />
-
-    </main>
-
-
-<Transition name="task-sidebar">
-
-    <TaskEditSidebar
-        v-if="editingTask"
-        :task="editingTask"
-        :owners="owners"
-        @save="handleTaskSave"
-        @close="closeTaskSidebar"
-    />
-
-</Transition>
-</section>
-<!-- =============================================
-     No Project
-============================================= -->
-
-<section
-    v-else
-    class="workspace workspace-empty"
->
-
-    <div class="workspace-empty-content">
-
-        <h2>
-
-            No Project Selected
-
-        </h2>
-
-        <p>
-
-            Create or select a Project to start
-            managing tasks.
-
-        </p>
-
-    </div>
-
-</section>
+    </section>
 
 </template>
 
@@ -200,6 +186,8 @@ import KanbanBoard
 
 import TaskEditSidebar
     from "../task/TaskEditSidebar.vue"
+
+
 /* ==============================================
    Props
 ============================================== */
@@ -215,6 +203,12 @@ const props = defineProps({
     },
 
 
+    /*
+     * Workspace receives owner NAMES only.
+     *
+     * Example:
+     * ["Tom", "Jack", "Mary"]
+     */
     owners: {
 
         type: Array,
@@ -233,16 +227,12 @@ const props = defineProps({
 const emit = defineEmits([
 
     "create-task",
-
     "detail-task",
-
     "delete-task",
-
     "open-template",
-
     "open-owner",
-
-    "update-task"
+    "update-task",
+    "move-task"
 
 ])
 
@@ -251,7 +241,8 @@ const emit = defineEmits([
    Owner Filter
 ============================================== */
 
-const selectedOwner = ref("ALL")
+const selectedOwner =
+    ref("ALL")
 
 
 watch(
@@ -261,13 +252,10 @@ watch(
     owners => {
 
         if (
-
             selectedOwner.value !== "ALL" &&
-
             !owners.includes(
                 selectedOwner.value
             )
-
         ) {
 
             selectedOwner.value = "ALL"
@@ -282,48 +270,45 @@ watch(
 
 )
 
-const editingTask = ref(null)
 
 /* ==============================================
-   Open Sidebar
+   Task Sidebar
 ============================================== */
+
+const editingTask =
+    ref(null)
+
 
 function handleEditTask(task) {
 
     if (!task) {
+
         return
+
     }
+
 
     editingTask.value = task
 
 }
 
-/* ==============================================
-   Detail
-============================================== */
 
 function handleDetailTask(task) {
 
     emit(
-
         "detail-task",
-
         task
-
     )
 
 }
 
-
-/* ==============================================
-   Close Sidebar
-============================================== */
 
 function closeTaskSidebar() {
 
     editingTask.value = null
 
 }
+
 
 function handleTaskSave(task) {
 
@@ -344,8 +329,47 @@ function handleTaskSave(task) {
 
 }
 
+
 /* ==============================================
-   Checklist Update
+   Move Task
+============================================== */
+
+function handleMoveTask(payload) {
+
+    if (!payload) {
+
+        return
+
+    }
+
+
+    const task =
+        payload.task
+
+    const status =
+        payload.status
+
+
+    if (!task || !status) {
+
+        return
+
+    }
+
+
+    emit(
+        "move-task",
+        {
+            task,
+            status
+        }
+    )
+
+}
+
+
+/* ==============================================
+   Checklist
 ============================================== */
 
 function handleChecklistUpdate(payload) {
@@ -357,13 +381,16 @@ function handleChecklistUpdate(payload) {
     }
 
 
-    const task = payload.task
+    const task =
+        payload.task
 
-    const checklist = Array.isArray(
-        payload.checklist
-    )
-        ? payload.checklist
-        : []
+
+    const checklist =
+        Array.isArray(
+            payload.checklist
+        )
+            ? payload.checklist
+            : []
 
 
     if (!task) {
@@ -377,35 +404,27 @@ function handleChecklistUpdate(payload) {
 
         ...task,
 
-        checklist: checklist.map(
-
-            item => ({
-
-                id:
-                    item.id,
-
-                text:
-                    item.text ?? "",
-
-                completed:
-                    Boolean(
-                        item.completed
-                    )
-
-            })
-
-        )
+        checklist:
+            checklist.map(
+                item => ({
+                    id: item.id,
+                    text: item.text ?? "",
+                    completed:
+                        Boolean(
+                            item.completed
+                        )
+                })
+            )
 
     }
 
 
     emit(
-
         "update-task",
-
         updatedTask
-
     )
 
 }
+
 </script>
+```

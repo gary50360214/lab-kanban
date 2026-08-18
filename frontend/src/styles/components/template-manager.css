@@ -1,173 +1,107 @@
-.template-manager{
+/* =========================================================
+   Template Checklist Editor
+========================================================= */
 
-
-    width:100%;
-
-
+.checklist-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
 }
 
 
-
-.template-toolbar{
-
-
-    display:flex;
-
-
-    justify-content:flex-end;
-
-
-    margin-bottom:20px;
-
-
+.checklist-editor-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
 }
 
 
+/*
+ * Checklist text input
+ *
+ * Explicitly define:
+ * - display
+ * - height
+ * - color
+ * - background
+ * - border
+ * - padding
+ *
+ * This prevents global input styles from hiding
+ * the text while typing.
+ */
 
+.checklist-editor-item input[type="text"] {
+    display: block;
 
-.template-list{
+    flex: 1 1 auto;
 
+    width: auto;
+    min-width: 0;
 
-    display:flex;
+    height: 40px;
 
+    margin: 0;
 
-    flex-direction:column;
+    padding: 8px 12px;
 
+    box-sizing: border-box;
 
-    gap:14px;
+    color: var(--project-text);
 
+    background: var(--project-bg, rgba(255,255,255,.06));
 
+    border: 1px solid var(--project-border);
+
+    border-radius: 8px;
+
+    outline: none;
 }
 
 
+.checklist-editor-item input[type="text"]:focus {
+    color: var(--project-text);
 
-.template-item{
+    outline: none;
 
-
-    display:flex;
-
-
-    justify-content:space-between;
-
-
-    align-items:center;
-
-
-    gap:20px;
-
-
-    padding:18px;
-
-
-    border-radius:20px;
-
-
-    background:
-
-        rgba(255,255,255,.06);
-
-
-    border:
-
-        1px solid var(--project-border);
-
-
+    border-color: var(--project-text-secondary);
 }
 
 
+/*
+ * Delete button
+ */
 
-.template-info h3{
+.checklist-editor-item .delete-button {
+    flex: 0 0 36px;
 
+    width: 36px;
+    min-width: 36px;
 
-    margin:0 0 6px;
+    height: 36px;
 
+    padding: 0;
 
-    color:var(--project-text);
+    display: flex;
 
+    align-items: center;
 
+    justify-content: center;
+
+    box-sizing: border-box;
 }
 
 
+/*
+ * Empty state
+ */
 
-.template-info p{
+.checklist-empty {
+    padding: 12px;
 
+    text-align: center;
 
-    margin:0;
-
-
-    color:
-
-        var(--project-text-secondary);
-
-
-}
-
-
-
-.template-actions{
-
-
-    display:flex;
-
-
-    gap:8px;
-
-
-}
-
-
-
-.template-editor{
-
-
-    margin-top:24px;
-
-
-    padding:20px;
-
-
-    border-radius:20px;
-
-
-    background:
-
-        rgba(255,255,255,.04);
-
-
-    border:
-
-        1px solid var(--project-border);
-
-
-}
-
-
-
-.template-editor input{
-
-
-    width:100%;
-
-
-    margin:16px 0;
-
-
-}
-
-
-
-.empty-template{
-
-
-    text-align:center;
-
-
-    padding:40px;
-
-
-    color:
-
-        var(--project-text-secondary);
-
-
+    color: var(--project-text-secondary);
 }

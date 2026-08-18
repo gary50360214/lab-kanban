@@ -152,7 +152,9 @@ const emit = defineEmits([
 
     "delete",
 
-    "checklist-update"
+    "checklist-update",
+
+    "move-task"
 
 ])
 
@@ -628,15 +630,20 @@ function moveTask({
         return
 
     }
-
+task.status =
+        targetStatus
 
     /*
-     * Keep the canonical status values
-     * consistent across the board.
+     * Ask the parent to persist the status change.
      */
 
-    task.status =
-        targetStatus
+    emit(
+        "move-task",
+        {
+            task,
+            status: targetStatus
+        }
+    )
 
 }
 
