@@ -3,11 +3,8 @@ import {
     createWebHistory
 } from "vue-router"
 
-
 import Home from "../views/HomeView.vue"
-
 import Projects from "../views/Projects.vue"
-
 import Login from "../views/LoginView.vue"
 
 
@@ -15,55 +12,38 @@ const routes = [
 
     {
         path: "/",
-
         component: Home
     },
 
-
     {
         path: "/login",
-
         component: Login,
-
         meta: {
             public: true
         }
     },
 
-
     {
         path: "/projects",
-
         component: Projects,
-
         meta: {
             requiresAuth: true
         }
     },
-
 
     {
         path: "/labs",
-
         component: () =>
-            import(
-                "../views/ProtectedPlaceholderView.vue"
-            ),
-
+            import("../views/ProtectedPlaceholderView.vue"),
         meta: {
             requiresAuth: true
         }
     },
 
-
     {
         path: "/tools",
-
         component: () =>
-            import(
-                "../views/ProtectedPlaceholderView.vue"
-            ),
-
+            import("../views/ProtectedPlaceholderView.vue"),
         meta: {
             requiresAuth: true
         }
@@ -74,8 +54,7 @@ const routes = [
 
 const router = createRouter({
 
-    history:
-        createWebHistory(),
+    history: createWebHistory(),
 
     routes
 
@@ -86,14 +65,9 @@ let authModule = null
 
 
 router.beforeEach(
-    async (
-        to
-    ) => {
+    async (to) => {
 
-        if (
-            !to.meta.requiresAuth
-        ) {
-
+        if (!to.meta.requiresAuth) {
             return true
         }
 
@@ -122,10 +96,7 @@ router.beforeEach(
             await checkAuth()
 
 
-        if (
-            isAuthenticated
-        ) {
-
+        if (isAuthenticated) {
             return true
         }
 
@@ -135,8 +106,7 @@ router.beforeEach(
             path: "/login",
 
             query: {
-                redirect:
-                    to.fullPath
+                redirect: to.fullPath
             }
 
         }
