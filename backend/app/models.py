@@ -1,8 +1,19 @@
-from sqlalchemy import Column, Integer, String, Text, Date, ForeignKey
+from datetime import datetime, timezone
+
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Text,
+    Date,
+    DateTime,
+    ForeignKey,
+    Index,
+)
+
 from sqlalchemy.orm import relationship
 
 from app.database import Base
-
 class Owner(Base):
     __tablename__ = "owners"
 
@@ -172,3 +183,88 @@ class TemplateChecklist(Base):
         "Template",
         back_populates="checklist"
     )
+# ============================================================
+# Authentication
+# ============================================================
+
+class User(Base):
+
+    __tablename__ = "users"
+
+    id = Column(
+        Integer,
+        primary_key=True
+    )
+
+    username = Column(
+        String(128),
+        nullable=False,
+        unique=True,
+        index=True
+    )
+
+    password_hash = Column(
+        String(512),
+        nullable=False
+    )
+
+    created_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc)
+    )
+
+
+class Session(Base):
+
+    __tablename__ = "sessions"
+
+    id = Column(
+        Integer,
+        primary_key=True
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE"
+        ),
+        nullable=False
+    )
+
+    token_hash = Column(
+        String(64),
+        nullable=False,
+        unique=True,
+        index=True
+    )
+
+    created_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc)
+    )
+
+    last_seen_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc)
+    )
+
+    expires_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        index=True
+    )
+
+    user = relationship(
+        "User"
+    )
+
+
+Index(
+    "ix_sessions_user_id_expires_at",
+    Session.user_id,
+    Session.expires_at
+)

@@ -207,3 +207,18 @@ class TemplateResponse(BaseModel):
     model_config = ConfigDict(
         from_attributes=True
     )
+# ============================================================
+# Authentication
+# ============================================================
+
+class LoginRequest(BaseModel):
+
+    username: str
+
+    password: str
+
+
+class AuthResponse(BaseModel):
+
+    authenticated: bool
+    username: str | None = None
